@@ -16,15 +16,13 @@ class CalendarSurgery extends Model
        'patient_id',
        'hospital_id',
        'surgery_from',
-       'procedure1_id',
-       'procedure2_id',
-       'procedure3_id',
        'doctor_id',
        'anesthetist',
        'surgery_time',
        'surgery_date',
        'admission_date',
        'surgery_note',
-       'surgery_temp'
+       'surgery_temp',
+       'status'
     ];
 }

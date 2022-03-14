@@ -49,7 +49,12 @@ Route::patch('/updateappointsataus/{id}/{value}', 'App\Http\Controllers\Calendar
 Route::post('/calendarsurgery', 'App\Http\Controllers\CalendarController@create_surgery');
 Route::get('/getcalendarsurgery', 'App\Http\Controllers\CalendarController@get_surgery');
 
-Route::post('/calendartasks', 'App\Http\Controllers\CalendarController@CreateTasks');
+Route::patch('/updatesurgerysataus/{id}/{value}', 'App\Http\Controllers\CalendarController@update_surgery_sataus');
+
+Route::post('/calendartasks', 'App\Http\Controllers\CalendarController@create_tasks');
+Route::get('/getcalendartasks', 'App\Http\Controllers\CalendarController@get_tasks');
+Route::patch('/updatetaskssataus/{id}/{value}', 'App\Http\Controllers\CalendarController@update_tasks_sataus');
+
 Route::get('getcalendar', 'App\Http\Controllers\CalendarController@GetCalendar');
 Route::post('/bydatecalendar', 'App\Http\Controllers\CalendarController@getDateCalendar');
 

@@ -35,6 +35,7 @@ class CalendarTasks extends Migration
             $table->string('remind_to')->nullable();
             $table->string('color')->nullable();
             $table->longText('task_text');
+            $table->string('status')->default('NC');
 
             $table->timestamps();
         });

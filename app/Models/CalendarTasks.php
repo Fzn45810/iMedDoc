@@ -11,6 +11,7 @@ class CalendarTasks extends Model
     public $table = "calendar_tasks";
     protected $fillable = [
        'id',
+       'appoint_type_id',
        'calendar_id',
        'task_time',
        'task_date',
@@ -19,6 +20,6 @@ class CalendarTasks extends Model
        'remind_to',
        'color',
        'task_text',
-       'appoint_type_id'
+       'status'
     ];
 }

@@ -7,6 +7,7 @@ use App\Models\Calendar;
 use App\Models\CalendarAppointment;
 use App\Models\CalendarSurgery;
 use App\Models\CalendarTasks;
+use App\Models\SurgeryProceRela;
 use Illuminate\Support\Facades\Validator;
 use DB;
 
@@ -180,9 +181,6 @@ class CalendarController extends Controller
         $calendarsurgery->patient_id = $patient_id;
         $calendarsurgery->hospital_id = $hospital_id;
         $calendarsurgery->surgery_from = $surgery_from;
-        $calendarsurgery->procedure1_id = $procedure1_id;
-        $calendarsurgery->procedure2_id = $procedure2_id;
-        $calendarsurgery->procedure3_id = $procedure3_id;
         $calendarsurgery->doctor_id = $doctor_id;
         $calendarsurgery->anesthetist = $anesthetist;
         $calendarsurgery->surgery_time = $surgery_time;
@@ -193,25 +191,63 @@ class CalendarController extends Controller
         $calendarsurgery->surgery_temp = $surgery_temp;
         $calendarsurgery->save();
 
+        $surgery_proce_rela1 = new SurgeryProceRela;
+        $surgery_proce_rela1->surgery_id = $calendarsurgery->id;
+        $surgery_proce_rela1->procedures_id = $procedure1_id;
+        $surgery_proce_rela1->save();
+
+        $surgery_proce_rela2 = new SurgeryProceRela;
+        $surgery_proce_rela2->surgery_id = $calendarsurgery->id;
+        $surgery_proce_rela2->procedures_id = $procedure2_id;
+        $surgery_proce_rela2->save();
+
+        $surgery_proce_rela3 = new SurgeryProceRela;
+        $surgery_proce_rela3->surgery_id = $calendarsurgery->id;
+        $surgery_proce_rela3->procedures_id = $procedure3_id;
+        $surgery_proce_rela3->save();
+
+
         return response(['success' => 'successfully create!']);
     }
 
     public function get_surgery(){
+        // $getsurgery = DB::table('calendar_surgery')
+        // ->join('appoint_type', 'appoint_type.id', '=', 'calendar_surgery.appoint_type_id')
+        // ->join('calendar', 'calendar.id', '=', 'calendar_surgery.calendar_id')
+        // ->join('patient', 'patient.id', '=', 'calendar_surgery.patient_id')
+        // ->join('hospital', 'hospital.id', '=', 'calendar_surgery.hospital_id')
+        // ->join('surgery_proced_relat', 'surgery_proced_relat.surgery_id', '=', 'calendar_surgery.id')
+        // ->join('procedures', 'procedures.id', '=', 'surgery_proced_relat.procedures_id')
+        // ->get();
+
         $getsurgery = DB::table('calendar_surgery')
         ->join('appoint_type', 'appoint_type.id', '=', 'calendar_surgery.appoint_type_id')
         ->join('calendar', 'calendar.id', '=', 'calendar_surgery.calendar_id')
         ->join('patient', 'patient.id', '=', 'calendar_surgery.patient_id')
         ->join('hospital', 'hospital.id', '=', 'calendar_surgery.hospital_id')
-        ->join('procedures', 'procedures.id', '=', 'calendar_surgery.procedure1_id')
-        ->join('procedures', 'procedures.id', '=', 'calendar_surgery.procedure2_id')
-        ->join('procedures', 'procedures.id', '=', 'calendar_surgery.procedure3_id')
+        ->select('calendar_surgery.id', 'surgery_time', 'dname', 'mobile', 'description', 'hospital_name', 'notes', 'status')
         ->get();
 
         return response(['data' => $getsurgery]);
-
     }
 
-    public function CreateTasks(Request $request){
+    public function update_surgery_sataus($id, $value){
+        DB::table('calendar_surgery')
+        ->where('id', '=', $id)
+        ->update(['status' => $value]);
+
+        $getsurgery = DB::table('calendar_surgery')
+        ->join('appoint_type', 'appoint_type.id', '=', 'calendar_surgery.appoint_type_id')
+        ->join('calendar', 'calendar.id', '=', 'calendar_surgery.calendar_id')
+        ->join('patient', 'patient.id', '=', 'calendar_surgery.patient_id')
+        ->join('hospital', 'hospital.id', '=', 'calendar_surgery.hospital_id')
+        ->select('calendar_surgery.id', 'surgery_time', 'dname', 'mobile', 'description', 'hospital_name', 'notes', 'status')
+        ->get();
+
+        return response(['data' => $getsurgery]);
+    }
+
+    public function create_tasks(Request $request){
         $appoint_type_id = $request->appoint_type_id;
         $calendar_id = $request->calendar_id;
         $task_time  = $request->task_time;
@@ -253,6 +289,33 @@ class CalendarController extends Controller
         $calendartasks->save();
 
         return response(['success' => 'successfully create!']);
+    }
+
+    public function get_tasks(){
+
+        $gettasks = DB::table('calendar_tasks')
+        ->join('appoint_type', 'appoint_type.id', '=', 'calendar_tasks.appoint_type_id')
+        ->join('calendar', 'calendar.id', '=', 'calendar_tasks.calendar_id')
+        ->join('doctor', 'doctor.id', '=', 'calendar_tasks.doctor_id')
+        ->select('calendar_tasks.id', 'task_time', 'description', 'status')
+        ->get();
+
+        return response(['data' => $gettasks]);
+    }
+
+    public function update_tasks_sataus($id, $value){
+        DB::table('calendar_tasks')
+        ->where('id', '=', $id)
+        ->update(['status' => $value]);
+
+        $gettasks = DB::table('calendar_tasks')
+        ->join('appoint_type', 'appoint_type.id', '=', 'calendar_tasks.appoint_type_id')
+        ->join('calendar', 'calendar.id', '=', 'calendar_tasks.calendar_id')
+        ->join('doctor', 'doctor.id', '=', 'calendar_tasks.doctor_id')
+        ->select('calendar_tasks.id', 'task_time', 'description', 'status')
+        ->get();
+
+        return response(['data' => $gettasks]);
     }
 
     public function getDateCalendar(Request $request){

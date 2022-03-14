@@ -34,18 +34,6 @@ class CalendarSurgery extends Migration
 
             $table->time('surgery_from');
 
-            $table->foreignId('procedure1_id')
-            ->references('id')->on('procedures')
-            ->onDelete('cascade');
-
-            $table->foreignId('procedure2_id')
-            ->references('id')->on('procedures')
-            ->onDelete('cascade');
-
-            $table->foreignId('procedure3_id')
-            ->references('id')->on('procedures')
-            ->onDelete('cascade');
-
             $table->foreignId('doctor_id')
             ->references('id')->on('doctor')
             ->onDelete('cascade');
@@ -56,6 +44,8 @@ class CalendarSurgery extends Migration
             $table->date('admission_date');
             $table->string('surgery_note')->nullable();
             $table->string('surgery_temp')->nullable();
+
+            $table->string('status')->default('NA');
 
             $table->timestamps();
         });
