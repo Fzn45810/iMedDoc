@@ -110,7 +110,7 @@ class CalendarController extends Controller
         ->join('appoint_descrip', 'appoint_descrip.id', '=', 'calendar_appointment.description_id')
         ->join('clinic_location', 'clinic_location.id', '=', 'calendar_appointment.location_id')
         ->join('doctor', 'doctor.id', '=', 'calendar_appointment.doctor_id')
-        ->select('calendar_appointment.id', 'appoint_time', 'dname', 'mobile', 'appoint_description', 'locatio_name', 'notes', 'status')
+        ->select('calendar_appointment.id', 'appoint_time', 'dname', 'mobile', 'appoint_description', 'locatio_name', 'notes', 'status', 'appoint_date')
         ->get();
 
         return response(['data' => $getappoint]);

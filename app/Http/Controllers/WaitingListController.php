@@ -108,7 +108,8 @@ class WaitingListController extends Controller
         ->join('users', 'users.id', 'patient.user_id')
         ->join('procedures', 'procedures.id', 'waiting_list.procedures_id')
         ->join('appoint_type', 'appoint_type.id', 'waiting_list.waitingFor')
-        ->select('fname', 'surname', 'title', 'waitingFrom', 'procedures.procedure_name', 'priority', 'appoint_type.appoint_name', 'appoint_type.id')
+        ->join('title_table', 'title_table.id', 'patient.title_type_id')
+        ->select('fname', 'surname', 'title_name', 'waitingFrom', 'procedures.procedure_name', 'priority', 'appoint_type.appoint_name', 'appoint_type.id')
         ->get();
 
         $list_appointment = DB::table('waiting_list')
@@ -116,7 +117,8 @@ class WaitingListController extends Controller
         ->join('users', 'users.id', 'patient.user_id')
         ->join('appoint_descrip', 'appoint_descrip.id', 'waiting_list.appoint_id')
         ->join('appoint_type', 'appoint_type.id', 'waiting_list.waitingFor')
-        ->select('fname', 'surname', 'title', 'waitingFrom', 'appoint_descrip.appoint_description', 'priority', 'appoint_type.appoint_name', 'appoint_type.id')
+        ->join('title_table', 'title_table.id', 'patient.title_type_id')
+        ->select('fname', 'surname', 'title_name', 'waitingFrom', 'appoint_descrip.appoint_description', 'priority', 'appoint_type.appoint_name', 'appoint_type.id')
         ->get();
 
         $alldata = [$list_surgery, $list_appointment];

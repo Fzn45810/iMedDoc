@@ -106,3 +106,5 @@ Route::get('/gettitletype', 'App\Http\Controllers\BookingController@get_title_ty
 
 Route::post('/invoice', 'App\Http\Controllers\AccountsController@create_invoice');
 Route::get('getinvoice', 'App\Http\Controllers\AccountsController@get_invoice');
+
+Route::get('getdoctor', 'App\Http\Controllers\Doctor@get_doctor');

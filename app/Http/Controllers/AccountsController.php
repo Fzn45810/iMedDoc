@@ -20,10 +20,10 @@ class AccountsController extends Controller
         $patient_id = $request->patient_id;
         // this is contact id
         $solicitor_id = $request->solicitor_id;
-        $procedures = $request->procedures;
+        $get_procedure = $request->procedures;
         $memo = $request->memo;
 
-        $get_procedure = explode(',', $procedures);
+        // $get_procedure = explode(',', $procedures);
 
         $validator = Validator::make($request->all(), [
             'bill_to' => 'required',
@@ -51,7 +51,7 @@ class AccountsController extends Controller
         foreach($get_procedure as $ids){
             $invoiceprocedure = new InvoiceProcedure;
             $invoiceprocedure->invoice_id = $invoice->id;
-            $invoiceprocedure->procedures_id = $ids;
+            $invoiceprocedure->procedures_id = $ids['id'];
             $invoiceprocedure->save();
         }
 
