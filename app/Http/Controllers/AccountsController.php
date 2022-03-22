@@ -55,7 +55,7 @@ class AccountsController extends Controller
             $invoiceprocedure->save();
         }
 
-        return response(['success' => 'Successfully create!']);
+        return response(['success' => 'successfully create!']);
     }
 
     public function get_invoice(){

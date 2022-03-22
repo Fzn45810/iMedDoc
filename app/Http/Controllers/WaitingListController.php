@@ -26,7 +26,7 @@ class WaitingListController extends Controller
         $validator = Validator::make($request->all(), [
             'patient_id' => 'required',
             'waitingFrom' => 'required',
-            'waitingFor' => 'required',
+            'waitingFor' => 'required|exists:appoint_type,id',
             'priority' => 'required'
         ]);
 
@@ -71,9 +71,9 @@ class WaitingListController extends Controller
         $notes = $request->notes;
 
         $validator = Validator::make($request->all(), [
-            'patient_id' => 'required',
+            'patient_id' => 'required|exists:patient,id',
             'waitingFrom' => 'required',
-            'waitingFor' => 'required',
+            'waitingFor' => 'required|exists:appoint_type,id',
             'priority' => 'required'
         ]);
 
@@ -109,7 +109,7 @@ class WaitingListController extends Controller
         ->join('procedures', 'procedures.id', 'waiting_list.procedures_id')
         ->join('appoint_type', 'appoint_type.id', 'waiting_list.waitingFor')
         ->join('title_table', 'title_table.id', 'patient.title_type_id')
-        ->select('fname', 'surname', 'title_name', 'waitingFrom', 'procedures.procedure_name', 'priority', 'appoint_type.appoint_name', 'appoint_type.id')
+        ->select('fname', 'surname', 'title_name', 'waitingFrom', 'procedures.procedure_name', 'priority', 'appoint_type.appoint_name', 'waiting_list.id')
         ->get();
 
         $list_appointment = DB::table('waiting_list')
@@ -118,7 +118,7 @@ class WaitingListController extends Controller
         ->join('appoint_descrip', 'appoint_descrip.id', 'waiting_list.appoint_id')
         ->join('appoint_type', 'appoint_type.id', 'waiting_list.waitingFor')
         ->join('title_table', 'title_table.id', 'patient.title_type_id')
-        ->select('fname', 'surname', 'title_name', 'waitingFrom', 'appoint_descrip.appoint_description', 'priority', 'appoint_type.appoint_name', 'appoint_type.id')
+        ->select('fname', 'surname', 'title_name', 'waitingFrom', 'appoint_descrip.appoint_description', 'priority', 'appoint_type.appoint_name', 'waiting_list.id')
         ->get();
 
         $alldata = [$list_surgery, $list_appointment];
