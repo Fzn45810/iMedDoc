@@ -41,6 +41,13 @@ class Invoice extends Migration
             ->nullable()
             ->onDelete('cascade');
 
+            $table->string('sub_total')->nullable();
+            $table->string('tax')->nullable();
+            $table->string('tax_percentage')->nullable();
+            $table->string('net_total')->nullable();
+
+            $table->string('paid')->nullable();
+
             $table->string('memo')->nullable();
 
             $table->timestamps();

@@ -7,6 +7,7 @@ use App\Models\WaitingList;
 use App\Models\PatientModel;
 use Illuminate\Support\Facades\Validator;
 use DB;
+use Illuminate\Support\Arr;
 
 class WaitingListController extends Controller
 {
@@ -24,7 +25,7 @@ class WaitingListController extends Controller
         $notes = $request->notes;
 
         $validator = Validator::make($request->all(), [
-            'patient_id' => 'required',
+            'patient_id' => 'required|exists:patient,user_id',
             'waitingFrom' => 'required',
             'waitingFor' => 'required|exists:appoint_type,id',
             'priority' => 'required'
@@ -34,7 +35,7 @@ class WaitingListController extends Controller
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
-        $patient = PatientModel::where('id', $patient_id)->first();
+        $patient = PatientModel::where('user_id', $patient_id)->first();
         $inwiating = WaitingList::where('patient_id', $patient_id)->first();
 
         if($patient){
@@ -59,6 +60,7 @@ class WaitingListController extends Controller
     }
 
     public function update(Request $request){
+        $waitinglist_id = $request->waitinglist_id;
         $patient_id = $request->patient_id;
         // waitingFrom type should be date. formate 2021-12-14
         $waitingFrom  = $request->waitingFrom;
@@ -81,13 +83,13 @@ class WaitingListController extends Controller
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
-        $patient = PatientModel::where('id', $patient_id)->first();
-        $inwiating = WaitingList::where('patient_id', $patient_id)->first();
+        $patient = PatientModel::where('user_id', $patient_id)->first();
+        $inwaiting = WaitingList::where('id', $waitinglist_id)->first();
 
         if($patient){
-            if($inwiating){
-                $updatewiating = WaitingList::where('patient_id', $patient_id)
-                ->update(['waitingFrom' => $waitingFrom, 'waitingFor' => $waitingFor, 'procedures_id' => $procedures_id, 'appoint_id' => $appoint_id, 'priority' => $priority, 'notes' => $notes]);
+            if($inwaiting){
+                $updatewiating = WaitingList::where('id', $waitinglist_id)
+                ->update(['patient_id' => $patient_id ,'waitingFrom' => $waitingFrom, 'waitingFor' => $waitingFor, 'procedures_id' => $procedures_id, 'appoint_id' => $appoint_id, 'priority' => $priority, 'notes' => $notes]);
 
                 if($updatewiating){
                     return response(['success' => 'successfully updated!']);
@@ -95,7 +97,7 @@ class WaitingListController extends Controller
                     return response(['message' => 'please try again!']);
                 }
             }else{
-                return response(['message' => 'patient not found!']);
+                return response(['message' => 'not found in waitinglist!']);
             }
         }else{
             return response(['message' => 'patient not exist!']);
@@ -104,12 +106,47 @@ class WaitingListController extends Controller
 
     public function GetWaitinglist(){
         $list_surgery = DB::table('waiting_list')
+        ->join('patient', 'patient.user_id', 'waiting_list.patient_id')
+        ->join('users', 'users.id', 'patient.user_id')
+        ->join('procedures', 'procedures.id', 'waiting_list.procedures_id')
+        ->join('appoint_type', 'appoint_type.id', 'waiting_list.waitingFor')
+        ->join('title_table', 'title_table.id', 'patient.title_type_id')
+        ->select('fname', 'surname', 'title_name', 'waitingFrom', 'procedures.procedure_name', 'priority','appoint_type.appoint_name', 'status', 'waiting_list.id', 'waiting_list.patient_id')
+        ->get();
+
+        $list_appointment = DB::table('waiting_list')
+        ->join('patient', 'patient.user_id', 'waiting_list.patient_id')
+        ->join('users', 'users.id', 'patient.user_id')
+        ->join('appoint_descrip', 'appoint_descrip.id', 'waiting_list.appoint_id')
+        ->join('appoint_type', 'appoint_type.id', 'waiting_list.waitingFor')
+        ->join('title_table', 'title_table.id', 'patient.title_type_id')
+        ->select('fname', 'surname', 'title_name', 'waitingFrom', 'appoint_descrip.appoint_description', 'priority', 'appoint_type.appoint_name', 'status', 'waiting_list.id', 'waiting_list.patient_id')
+        ->get();
+
+        $list_task = DB::table('waiting_list')
+        ->join('patient', 'patient.id', 'waiting_list.patient_id')
+        ->join('users', 'users.id', 'patient.user_id')
+        ->join('title_table', 'title_table.id', 'patient.title_type_id')
+        ->join('appoint_type', 'appoint_type.id', 'waiting_list.waitingFor')
+        ->where('procedures_id', null)
+        ->where('appoint_id', null)
+        ->select('fname', 'surname', 'title_name', 'waitingFrom', 'priority','appoint_type.appoint_name', 'status', 'waiting_list.id', 'waiting_list.patient_id')
+        ->get();
+
+        $alldata = Arr::collapse([$list_surgery, $list_appointment, $list_task]);
+
+        return response(['data' => $alldata]);
+    }
+
+    public function get_single_waitinglist($waitingid){
+        $list_surgery = DB::table('waiting_list')
         ->join('patient', 'patient.id', 'waiting_list.patient_id')
         ->join('users', 'users.id', 'patient.user_id')
         ->join('procedures', 'procedures.id', 'waiting_list.procedures_id')
         ->join('appoint_type', 'appoint_type.id', 'waiting_list.waitingFor')
         ->join('title_table', 'title_table.id', 'patient.title_type_id')
-        ->select('fname', 'surname', 'title_name', 'waitingFrom', 'procedures.procedure_name', 'priority', 'appoint_type.appoint_name', 'waiting_list.id')
+        ->where('waiting_list.id', $waitingid)
+        ->select('fname', 'surname', 'title_name', 'waitingFrom', 'procedures.procedure_name', 'priority', 'appoint_type.appoint_name', 'status', 'waiting_list.id')
         ->get();
 
         $list_appointment = DB::table('waiting_list')
@@ -118,10 +155,53 @@ class WaitingListController extends Controller
         ->join('appoint_descrip', 'appoint_descrip.id', 'waiting_list.appoint_id')
         ->join('appoint_type', 'appoint_type.id', 'waiting_list.waitingFor')
         ->join('title_table', 'title_table.id', 'patient.title_type_id')
-        ->select('fname', 'surname', 'title_name', 'waitingFrom', 'appoint_descrip.appoint_description', 'priority', 'appoint_type.appoint_name', 'waiting_list.id')
+        ->where('waiting_list.id', $waitingid)
+        ->select('fname', 'surname', 'title_name', 'waitingFrom', 'appoint_descrip.appoint_description', 'priority', 'appoint_type.appoint_name', 'status', 'waiting_list.id')
         ->get();
 
-        $alldata = [$list_surgery, $list_appointment];
+        if(count($list_surgery) != 0){
+            return response(['data' => $list_surgery]);
+        }elseif(count($list_appointment) != 0){
+            return response(['data' => $list_appointment]);
+        }else{
+            return response(['message' => 'No waitinglist!']);
+        }
+    }
+
+    public function update_waitinglist_sataus($id){
+        DB::table('waiting_list')
+        ->where('id', '=', $id)
+        ->update(['status' => 'Schedule']);
+
+        $list_surgery = DB::table('waiting_list')
+        ->join('patient', 'patient.user_id', 'waiting_list.patient_id')
+        ->join('users', 'users.id', 'patient.user_id')
+        ->join('procedures', 'procedures.id', 'waiting_list.procedures_id')
+        ->join('appoint_type', 'appoint_type.id', 'waiting_list.waitingFor')
+        ->join('title_table', 'title_table.id', 'patient.title_type_id')
+        ->select('fname', 'surname', 'title_name', 'waitingFrom', 'procedures.procedure_name', 'priority','appoint_type.appoint_name', 'status', 'waiting_list.id', 'waiting_list.patient_id')
+        ->get();
+
+        $list_appointment = DB::table('waiting_list')
+        ->join('patient', 'patient.user_id', 'waiting_list.patient_id')
+        ->join('users', 'users.id', 'patient.user_id')
+        ->join('appoint_descrip', 'appoint_descrip.id', 'waiting_list.appoint_id')
+        ->join('appoint_type', 'appoint_type.id', 'waiting_list.waitingFor')
+        ->join('title_table', 'title_table.id', 'patient.title_type_id')
+        ->select('fname', 'surname', 'title_name', 'waitingFrom', 'appoint_descrip.appoint_description', 'priority', 'appoint_type.appoint_name', 'status', 'waiting_list.id', 'waiting_list.patient_id')
+        ->get();
+
+        $list_task = DB::table('waiting_list')
+        ->join('patient', 'patient.id', 'waiting_list.patient_id')
+        ->join('users', 'users.id', 'patient.user_id')
+        ->join('title_table', 'title_table.id', 'patient.title_type_id')
+        ->join('appoint_type', 'appoint_type.id', 'waiting_list.waitingFor')
+        ->where('procedures_id', null)
+        ->where('appoint_id', null)
+        ->select('fname', 'surname', 'title_name', 'waitingFrom', 'priority','appoint_type.appoint_name', 'status', 'waiting_list.id', 'waiting_list.patient_id')
+        ->get();
+
+        $alldata = Arr::collapse([$list_surgery, $list_appointment, $list_task]);
 
         return response(['data' => $alldata]);
     }

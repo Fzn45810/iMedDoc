@@ -21,6 +21,10 @@ class AccountsController extends Controller
         // this is contact id
         $solicitor_id = $request->solicitor_id;
         $get_procedure = $request->procedures;
+        $sub_total = $request->sub_total;
+        $tax = $request->tax;
+        $tax_percentage = $request->tax_percentage;
+        $net_total = $request->net_total;
         $memo = $request->memo;
 
         // $get_procedure = explode(',', $procedures);
@@ -29,8 +33,7 @@ class AccountsController extends Controller
             'bill_to' => 'required',
             'date' => 'required',
             'income_category_id' => 'required|exists:income_category,id',
-            'insurance_number' => 'required',
-            'patient_id' => 'required|exists:patient,id'
+            'patient_id' => 'required|exists:patient,user_id'
         ]);
 
         if ($validator->fails()) {
@@ -45,6 +48,10 @@ class AccountsController extends Controller
         $invoice->insurance_number = $insurance_number;
         $invoice->patient_id = $patient_id;
         $invoice->solicitor_id = $solicitor_id;
+        $invoice->sub_total = $sub_total;
+        $invoice->tax = $tax;
+        $invoice->tax_percentage = $tax_percentage;
+        $invoice->net_total = $net_total;
         $invoice->memo = $memo;
         $invoice->save();
 
@@ -64,53 +71,56 @@ class AccountsController extends Controller
         ->join('procedures', 'invoice_proced_relat.procedures_id', 'procedures.id')
         ->join('patient', 'patient.id', 'invoice.patient_id')
         ->join('income_category', 'income_category.id', 'invoice.income_category_id')
+        ->select('invoice.id', 'invoice.date', 'patient.user_id', 'patient.dname', 'patient.surname', 'income_category.category_name', 'invoice.sub_total', 'invoice.tax_percentage','invoice.paid' ,'invoice.net_total')
         ->get();
 
-        dd($getInvoice);
+        // dd($getInvoice);
 
         $tempPatientId = null;
+        $excelArray = [];
 
         foreach($getInvoice as $key => $value){
             if($tempPatientId == null){
                 $object = new \stdClass();
-                $object->insurance_number = $value->insurance_number;
+                $object->invoice_no = $value->id;
                 $object->date = $value->date;
-                $object->patient = $value->user_id;
-                $tempPatientId = $value->user_id;
+                $object->patient_id = $value->user_id;
+                $object->patient = $value->dname. ' '. $value->surname;
+                $object->income_location = $value->category_name;
+                $object->amount = $value->sub_total;
+                $object->ml_tax = $value->tax_percentage;
+                $object->paid = $value->paid;
+                $object->balance = $value->net_total;
+
+                $tempPatientId = $value->id;
                 if((count($getInvoice)-1) == $key){
                     $excelArray [] = $object;
                 }
-            }elseif($tempPatientId == $value->employe_id){
-                $payrate [] = $value->payrate;
-                $object->starts = $shifts;
-                $object->payrate = $payrate;
+            }elseif($tempPatientId != $value->id){
+                $excelArray [] = $object;
+                
+                $object = new \stdClass();
+                $object->invoice_no = $value->id;
+                $object->date = $value->date;
+                $object->patient_id = $value->user_id;
+                $object->patient = $value->dname. ' '. $value->surname;
+                $object->income_location = $value->category_name;
+                $object->amount = $value->sub_total;
+                $object->ml_tax = $value->tax_percentage;
+                $object->paid = $value->paid;
+                $object->balance = $value->net_total;
+
+                $tempPatientId = $value->id;
                 if((count($getInvoice)-1) == $key){
                     $excelArray [] = $object;
                 }
             }else{
-                $shifts = [];
-                $payrate = [];
-                $excelArray [] = $object;
-
-                $shifts [] = date('h:i a', strtotime($value->startshift)).' to '.date('h:i a', strtotime($value->endshift));
-                $payrate [] = $value->payrate;
-                $object = new \stdClass();
-                $object->fName = $value->fName;
-                $object->lName = $value->lName;
-                $object->Contactnumber = $value->Contactnumber;
-                $object->c_countrycode = $value->c_countrycode;
-                $object->starts = $shifts;
-                $object->payrate = $payrate;
-                $object->employe_id = $value->employe_id;
-                $object->name = $value->name;
-                $object->is_checkIn = $value->is_checkIn;
-                $tempPatientId = $value->employe_id;
                 if((count($getInvoice)-1) == $key){
                     $excelArray [] = $object;
                 }
             }
         }
-        return response(['data' => $getInvoice]);
+        return response(['data' => $excelArray]);
 
     }
 }

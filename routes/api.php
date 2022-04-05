@@ -26,6 +26,8 @@ Route::get('singlepatient/{id}', 'App\Http\Controllers\BookingController@get_sin
 Route::post('waitinglist', 'App\Http\Controllers\WaitingListController@create');
 Route::post('waitinglistupdate', 'App\Http\Controllers\WaitingListController@update');
 Route::get('getwaitinglist', 'App\Http\Controllers\WaitingListController@GetWaitinglist');
+Route::get('get_single_waitinglist/{waitingid}', 'App\Http\Controllers\WaitingListController@get_single_waitinglist');
+Route::patch('/updatewaitinglistsataus/{id}', 'App\Http\Controllers\WaitingListController@update_waitinglist_sataus');
 
 Route::post('/chatmessage', 'App\Http\Controllers\ChatController@ChatMessage')->name('chat.message');
 

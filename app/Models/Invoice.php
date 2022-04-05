@@ -18,6 +18,11 @@ class Invoice extends Model
        'insurance_number',
        'patient_id',
        'solicitor_id',
+       'sub_total',
+       'tax',
+       'tax_percentage',
+       'net_total',
+       'paid',
        'memo'
     ];
 }

@@ -38,6 +38,8 @@ class WaitingList extends Migration
             $table->string('priority');
             $table->string('notes')->nullable();
 
+            $table->string('status')->default('Waiting');
+
             $table->timestamps();
         });
     }

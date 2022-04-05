@@ -18,5 +18,6 @@ class WaitingList extends Model
         'appoint_id',
         'priority',
         'notes',
+        'status'
     ];
 }
