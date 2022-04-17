@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class Title extends Migration
+class LodgementReceiptRel extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,16 @@ class Title extends Migration
      */
     public function up()
     {
-        Schema::create('title_table', function (Blueprint $table) {
+        Schema::create('lodgement_receipt_rel', function (Blueprint $table) {
             $table->id();
 
-            $table->longText('title_name');
+            $table->foreignId('lodgement_id')
+            ->references('id')->on('lodgement')
+            ->onDelete('cascade');
+
+            $table->foreignId('receipt_id')
+            ->references('id')->on('receipt')
+            ->onDelete('cascade');
 
             $table->timestamps();
         });
@@ -29,6 +35,6 @@ class Title extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('title_table');
+        Schema::dropIfExists('lodgement_receipt_rel');
     }
 }

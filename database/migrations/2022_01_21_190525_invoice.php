@@ -25,8 +25,8 @@ class Invoice extends Migration
             ->onDelete('cascade');
 
             $table->foreignId('insurance_company_id')
-            ->references('id')->on('insurance_company')
             ->nullable()
+            ->references('id')->on('insurance_company')
             ->onDelete('cascade');
 
             $table->string('insurance_number')->nullable();
@@ -37,8 +37,8 @@ class Invoice extends Migration
 
             // this is contact id
             $table->foreignId('solicitor_id')
-            ->references('id')->on('contacts')
             ->nullable()
+            ->references('id')->on('contacts')
             ->onDelete('cascade');
 
             $table->string('sub_total')->nullable();

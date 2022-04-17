@@ -18,6 +18,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('getdoctor', 'App\Http\Controllers\Doctor@get_doctor');
+
 Route::post('newpatient', 'App\Http\Controllers\BookingController@add_patient');
 Route::post('updatepatient', 'App\Http\Controllers\BookingController@update_patient');
 Route::get('getpatient', 'App\Http\Controllers\BookingController@get_all_patient');
@@ -106,7 +108,23 @@ Route::get('/getcontacttype', 'App\Http\Controllers\BookingController@get_contac
 Route::post('/titletype', 'App\Http\Controllers\BookingController@add_title_type');
 Route::get('/gettitletype', 'App\Http\Controllers\BookingController@get_title_type');
 
-Route::post('/invoice', 'App\Http\Controllers\AccountsController@create_invoice');
-Route::get('getinvoice', 'App\Http\Controllers\AccountsController@get_invoice');
+Route::post('/bankdetails', 'App\Http\Controllers\BankController@create');
+Route::post('/updatebankdetails', 'App\Http\Controllers\BankController@update');
+Route::get('/getbankdetails', 'App\Http\Controllers\BankController@get');
+Route::get('/singlebankdetails/{id}', 'App\Http\Controllers\BankController@single_get');
 
-Route::get('getdoctor', 'App\Http\Controllers\Doctor@get_doctor');
+Route::post('/invoice', 'App\Http\Controllers\AccountsController@create_invoice');
+Route::post('/updateinvoice', 'App\Http\Controllers\AccountsController@update_invoice');
+Route::get('getinvoice', 'App\Http\Controllers\AccountsController@get_invoice');
+Route::get('singleinvoice/{id}', 'App\Http\Controllers\AccountsController@get_single_invoice');
+
+Route::post('/receipt', 'App\Http\Controllers\AccountsController@create_receipt');
+Route::post('/updatereceipt', 'App\Http\Controllers\AccountsController@update_receipt');
+Route::get('getreceipt', 'App\Http\Controllers\AccountsController@get_receipt');
+Route::get('singlereceipt/{id}', 'App\Http\Controllers\AccountsController@get_single_receipt');
+Route::get('/getreceivedfrom/{type}/{id}', 'App\Http\Controllers\AccountsController@get_received_from');
+
+Route::post('/lodgement', 'App\Http\Controllers\AccountsController@create_lodgement');
+Route::post('/updatelodgement', 'App\Http\Controllers\AccountsController@update_lodgement');
+Route::get('/getlodgement', 'App\Http\Controllers\AccountsController@get_lodgement');
+Route::get('/singlelodgement/{id}', 'App\Http\Controllers\AccountsController@get_single__lodgement');

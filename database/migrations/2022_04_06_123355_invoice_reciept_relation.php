@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class InsuProceRelation extends Migration
+class InvoiceRecieptRelation extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,20 @@ class InsuProceRelation extends Migration
      */
     public function up()
     {
-        Schema::create('insurance_proced_relat', function (Blueprint $table) {
+        Schema::create('invoice_receipt_relat', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('insurance_id')
-            ->references('id')->on('insurance_company')
+            $table->foreignId('invoice_id')
+            ->references('id')->on('invoice')
             ->onDelete('cascade');
 
-            $table->foreignId('procedures_id')
-            ->references('id')->on('procedures')
+            $table->foreignId('receipt_id')
+            ->references('id')->on('receipt')
             ->onDelete('cascade');
 
-            $table->string('rates')->nullable();
+            $table->string('relat_r_tax');
+            $table->string('relat_waived');
+            $table->string('relat_payment');
 
             $table->timestamps();
         });
@@ -37,6 +39,6 @@ class InsuProceRelation extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('insurance_proced_relat');
+        Schema::dropIfExists('invoice_receipt_relat');
     }
 }
