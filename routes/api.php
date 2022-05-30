@@ -128,3 +128,19 @@ Route::post('/lodgement', 'App\Http\Controllers\AccountsController@create_lodgem
 Route::post('/updatelodgement', 'App\Http\Controllers\AccountsController@update_lodgement');
 Route::get('/getlodgement', 'App\Http\Controllers\AccountsController@get_lodgement');
 Route::get('/singlelodgement/{id}', 'App\Http\Controllers\AccountsController@get_single__lodgement');
+
+Route::post('/expenses', 'App\Http\Controllers\AccountsController@create_expenses');
+Route::post('/updateexpenses', 'App\Http\Controllers\AccountsController@update_expenses');
+Route::get('/getexpenses', 'App\Http\Controllers\AccountsController@get_expenses');
+Route::get('/singleexpenses/{id}', 'App\Http\Controllers\AccountsController@get_single_expenses');
+
+Route::post('/dictation', 'App\Http\Controllers\DictationController@create_dictation');
+Route::post('/updatedictation', 'App\Http\Controllers\DictationController@update_dictation');
+Route::get('/getdictation', 'App\Http\Controllers\DictationController@get_dictation');
+Route::get('/singledictation/{id}', 'App\Http\Controllers\DictationController@get_single_dictation');
+
+Route::post('/stickynote', 'App\Http\Controllers\StickyNoteController@create_stickynote');
+Route::post('/updatestickynotedes', 'App\Http\Controllers\StickyNoteController@update_stickynote_des');
+Route::post('/upstickynoteisactive', 'App\Http\Controllers\StickyNoteController@update_stickynote_is_active');
+Route::get('/getstickynotes', 'App\Http\Controllers\StickyNoteController@get_sticky_notes');
+Route::get('/getsinglestickynote/{id}', 'App\Http\Controllers\StickyNoteController@get_single_sticky_note');

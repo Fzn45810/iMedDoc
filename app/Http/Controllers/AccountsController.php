@@ -9,7 +9,11 @@ use App\Models\receipt;
 use App\Models\InvoiceReceipt;
 use App\Models\Lodgement;
 use App\Models\LodgementReceipt;
+use App\Models\Expenses;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Arr;
 use DB;
 
 class AccountsController extends Controller
@@ -601,26 +605,228 @@ class AccountsController extends Controller
     }
 
     public function get_lodgement(){
-        $get_all = DB::table('lodgement')
+        $get_lodgement_all = DB::table('lodgement')
         ->join('bank_details', 'bank_details.id', 'lodgement.bank_id')
-        ->select('lodgement.id', 'lodgement.date', 'bank_details.bank_name', 'lodgement.total_amount')
+        ->select('lodgement.id', 'lodgement.date', 'lodgement.bank_id' ,'bank_details.bank_name', 'lodgement.total_amount', 'lodgement.lodgement_memo')
         ->get();
-        return response(['data' => $get_all]);
+
+        $get_relation = DB::table('lodgement_receipt_rel')
+        ->join('receipt', 'receipt.id', 'lodgement_receipt_rel.receipt_id')
+        ->select('lodgement_receipt_rel.receipt_id', 'receipt.date', 'receipt.mode_of_payment', 'receipt.payment')
+        ->get();
+
+        $get_lodgement_all [] = ['receipt_id' => $get_relation];
+
+        return response(['data' => $get_lodgement_all]);
     }
 
     public function get_single__lodgement($id){
         $get_lodgement = DB::table('lodgement')
         ->join('bank_details', 'bank_details.id', 'lodgement.bank_id')
-        ->select('lodgement.id', 'lodgement.date', 'bank_details.bank_name', 'lodgement.total_amount')
+        ->select('lodgement.id', 'lodgement.date', 'lodgement.bank_id' ,'bank_details.bank_name', 'lodgement.total_amount', 'lodgement.lodgement_memo')
         ->where('lodgement.id', $id)
         ->get();
 
         $get_relation = DB::table('lodgement_receipt_rel')
         ->join('receipt', 'receipt.id', 'lodgement_receipt_rel.receipt_id')
-        ->select('receipt.id', 'receipt.date', 'receipt.mode_of_payment', 'receipt.payment')
+        ->select('lodgement_receipt_rel.receipt_id', 'receipt.date', 'receipt.mode_of_payment', 'receipt.payment')
         ->where('lodgement_receipt_rel.lodgement_id', $id)
         ->get();
 
-        return response(['data' => $get_lodgement, $get_relation]);
+        $get_lodgement [] = ['receipt_id' => $get_relation];
+
+        return response(['data' => $get_lodgement]);
+    }
+
+    public function create_expenses(Request $request){
+        // date type should be date. formate 2021-12-14
+        $expenses_date = $request->expenses_date;
+        $expenses_amount = $request->expenses_amount;
+        $expenses_category = $request->expenses_category;
+        $expenses_payment_mode = $request->expenses_payment_mode;
+        // if payment mode is cheque
+        $expens_bank_name = $request->expens_bank_name;
+        $expens_cheque_no = $request->expens_cheque_no;
+        $expens_cheque_date = $request->expens_cheque_date;
+        // if payment mode is credit card
+        $expens_card_type = $request->expens_card_type;
+        $expens_card_name = $request->expens_card_name;
+        $expens_card_no = $request->expens_card_no;
+        $expens_card_expi_date = $request->expens_card_expi_date;
+        // if payment mode is direct debit
+        $expens_refrence_no = $request->expens_refrence_no;
+        $expens_ref_bank_name = $request->expens_ref_bank_name;
+
+        $expens_details = $request->expens_details;
+
+        // $file1 = $request->file('expens_file_one');
+        // $name1 = time() . Str::random(40) . '.' . $file1->getClientOriginalExtension();
+        // Storage::disk('public')->put('/uploadimage/'. $name1, $file1);
+        // // Storage::disk('public')->url($file1);
+
+        // $file2 = $request->file('expens_file_two');
+        // $name2 = time() . Str::random(40) . '.' . $file2->getClientOriginalExtension();
+        // Storage::disk('public')->put('/uploadimage/'. $name2, $file2);
+        // // Storage::disk('public')->url($file2);
+
+        // $file3 = $request->file('expens_file_three');
+        // $name3 = time() . Str::random(40) . '.' . $file2->getClientOriginalExtension();
+        // Storage::disk('public')->put('/uploadimage/'. $name3, $file3);
+        // $url = Storage::disk('public')->url($name3);
+
+
+        $extention1 = $request->file("expens_file_one")->getClientOriginalExtension();
+        $fileName1 = rand(11111111, 99999999).'.'.$extention1;
+        $request->file("expens_file_one")->move(public_path("files/"), $fileName1);
+
+        $extention2 = $request->file("expens_file_two")->getClientOriginalExtension();
+        $fileName2 = rand(11111111, 99999999).'.'.$extention2;
+        $request->file("expens_file_two")->move(public_path("files/"), $fileName2);
+
+        $extention3 = $request->file("expens_file_three")->getClientOriginalExtension();
+        $fileName3 = rand(11111111, 99999999).'.'.$extention3;
+        $request->file("expens_file_three")->move(public_path("files/"), $fileName3);
+        
+        // $fileURL = url('files/'.$fileName1);
+
+        // $file1 = $request->file('expens_file_one');
+        // $path1 = public_path() . '/uploads/file';
+        // $file1->move($path1, $file1->getClientOriginalName());
+
+        // $file2 = $request->file('expens_file_two');
+        // $path2 = public_path() . '/uploads/file';
+        // $file2->move($path2, $file2->getClientOriginalName());
+
+        // $file3 = $request->file('expens_file_three');
+        // $path3 = public_path() . '/uploads/file';
+        // $file3->move($path3, $file3->getClientOriginalName());
+
+        $validator = Validator::make($request->all(), [
+            'expenses_date' => 'required',
+            'expenses_amount' => 'required',
+            'expenses_category' => 'required',
+            'expenses_payment_mode' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 401);
+        }
+
+        $expenses = new Expenses;
+        $expenses->expenses_date = $expenses_date;
+        $expenses->expenses_amount = $expenses_amount;
+        $expenses->expenses_category = $expenses_category;
+        $expenses->expenses_payment_mode = $expenses_payment_mode;
+        $expenses->expens_bank_name = $expens_bank_name;
+        $expenses->expens_cheque_no = $expens_cheque_no;
+        $expenses->expens_cheque_date = $expens_cheque_date;
+        $expenses->expens_card_type = $expens_card_type;
+        $expenses->expens_card_name = $expens_card_name;
+        $expenses->expens_card_no = $expens_card_no;
+        $expenses->expens_card_expi_date = $expens_card_expi_date;
+        $expenses->expens_refrence_no = $expens_refrence_no;
+        $expenses->expens_ref_bank_name = $expens_ref_bank_name;
+        $expenses->expens_details = $expens_details;
+        $expenses->expens_file_one = $fileName1;
+        $expenses->expens_file_two = $fileName2;
+        $expenses->expens_file_three = $fileName3;
+        $expenses->save();
+
+        return response(['success' => 'successfully create!']);
+    }
+
+    public function update_expenses(Request $request){
+        $id = $request->id;
+        // date type should be date. formate 2021-12-14
+        $expenses_date = $request->expenses_date;
+        $expenses_amount = $request->expenses_amount;
+        $expenses_category = $request->expenses_category;
+        $expenses_payment_mode = $request->expenses_payment_mode;
+        // if payment mode is cheque
+        $expens_bank_name = $request->expens_bank_name;
+        $expens_cheque_no = $request->expens_cheque_no;
+        $expens_cheque_date = $request->expens_cheque_date;
+        // if payment mode is credit card
+        $expens_card_type = $request->expens_card_type;
+        $expens_card_name = $request->expens_card_name;
+        $expens_card_no = $request->expens_card_no;
+        $expens_card_expi_date = $request->expens_card_expi_date;
+        // if payment mode is direct debit
+        $expens_refrence_no = $request->expens_refrence_no;
+        $expens_ref_bank_name = $request->expens_ref_bank_name;
+
+        $expens_details = $request->expens_details;
+
+        $extention1 = $request->file("expens_file_one")->getClientOriginalExtension();
+        $fileName1 = rand(11111111, 99999999).'.'.$extention1;
+        $request->file("expens_file_one")->move(public_path("files/"), $fileName1);
+
+        $extention2 = $request->file("expens_file_two")->getClientOriginalExtension();
+        $fileName2 = rand(11111111, 99999999).'.'.$extention2;
+        $request->file("expens_file_two")->move(public_path("files/"), $fileName2);
+
+        $extention3 = $request->file("expens_file_three")->getClientOriginalExtension();
+        $fileName3 = rand(11111111, 99999999).'.'.$extention3;
+        $request->file("expens_file_three")->move(public_path("files/"), $fileName3);
+
+        $validator = Validator::make($request->all(), [
+            'expenses_date' => 'required',
+            'expenses_amount' => 'required',
+            'expenses_category' => 'required',
+            'expenses_payment_mode' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 401);
+        }
+
+        $Expenses = Expenses::where('id', $id)->first();
+
+        if($Expenses){
+            Expenses::where('id', $id)
+            ->update(['expenses_date' => $expenses_date, 'expenses_amount' => $expenses_amount, 'expenses_category' => $expenses_category, 'expenses_payment_mode' => $expenses_payment_mode, 'expens_bank_name' => $expens_bank_name, 'expens_cheque_no' => $expens_cheque_no, 'expens_cheque_date' => $expens_cheque_date, 'expens_card_type' => $expens_card_type, 'expens_card_name' => $expens_card_name, 'expens_card_no' => $expens_card_no, 'expens_card_expi_date' => $expens_card_expi_date, 'expens_refrence_no' => $expens_refrence_no, 'expens_ref_bank_name' => $expens_ref_bank_name, 'expens_details' => $expens_details, 'expens_file_one' => $fileName1, 'expens_file_two' => $fileName2, 'expens_file_three' => $fileName3]);
+
+            return response(['success' => 'successfully update!']);
+        }else{
+            return response(['message' => 'expenses not exist!']);
+        }
+    }
+
+    public function get_expenses(){
+        $get_all = DB::table('expenses')
+        ->select('expenses.id', 'expenses.expenses_category', 'expenses.expenses_date','expenses.expenses_payment_mode', 'expenses.expenses_amount')
+        ->get();
+
+        return response(['data' => $get_all]);
+    }
+
+    public function get_single_expenses($id){
+        $app_name = 'https://demoimed.nextbitsolution.com/files/';
+        $get_expenses = DB::table('expenses')
+        ->where('expenses.id', $id)
+        ->first();
+
+        $object = new \stdClass();
+        $object->expenses_id = $get_expenses->id;
+        $object->expenses_date = $get_expenses->expenses_date;
+        $object->expenses_amount = $get_expenses->expenses_amount;
+        $object->expenses_category = $get_expenses->expenses_category;
+        $object->expenses_payment_mode = $get_expenses->expenses_payment_mode;
+        $object->expens_bank_name = $get_expenses->expens_bank_name;
+        $object->expens_cheque_no = $get_expenses->expens_cheque_no;
+        $object->expens_cheque_date = $get_expenses->expens_cheque_date;
+        $object->expens_card_type = $get_expenses->expens_card_type;
+        $object->expens_card_name = $get_expenses->expens_card_name;
+        $object->expens_card_no = $get_expenses->expens_card_no;
+        $object->expens_card_expi_date = $get_expenses->expens_card_expi_date;
+        $object->expens_refrence_no = $get_expenses->expens_refrence_no;
+        $object->expens_ref_bank_name = $get_expenses->expens_ref_bank_name;
+        $object->expens_details = $get_expenses->expens_details;
+
+        $object->expens_file_one = $app_name . $get_expenses->expens_file_one;
+        $object->expens_file_two = $app_name . $get_expenses->expens_file_two;
+        $object->expens_file_three = $app_name . $get_expenses->expens_file_three;
+
+        return response(['data' => $object]);
     }
 }
