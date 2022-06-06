@@ -17,6 +17,7 @@ class AllEmail extends Model
        'from_name',
        'subject',
        'email_text',
+       'attachment',
        'cc',
        'bcc',
        'created_at',

@@ -19,6 +19,7 @@ class AppointDescrip extends Migration
             $table->longText('appoint_description');
 
             $table->foreignId('procedures_id')
+            ->nullable()
             ->references('id')->on('procedures')
             ->onDelete('cascade');
 

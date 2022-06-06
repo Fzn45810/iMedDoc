@@ -30,6 +30,17 @@ class SendMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('New Factory Detail')->view('email.doctoremail');
+        $subject = $this->details['subject'];
+        $attachment = $this->details['attachment'];
+        $file_name = $this->details['file_name'];
+        if(!is_null($attachment)){
+            return $this->subject($subject)
+            ->view('email.doctoremail')
+            ->attach(public_path("emaiattachment/".$file_name), [
+                'as' => $this->details['attachment']->getClientOriginalName()
+            ]);
+        }else{
+            return $this->subject($subject)->view('email.doctoremail');
+        }
     }
 }

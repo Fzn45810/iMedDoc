@@ -34,10 +34,10 @@ Route::patch('/updatewaitinglistsataus/{id}', 'App\Http\Controllers\WaitingListC
 Route::post('/chatmessage', 'App\Http\Controllers\ChatController@ChatMessage')->name('chat.message');
 
 Route::post('/sendemail', 'App\Http\Controllers\MailController@SendEmail');
-Route::get('getsentemail', 'App\Http\Controllers\MailController@GetAllSendEmail');
+Route::get('getsentemail', 'App\Http\Controllers\MailController@get_all_send_email');
 
-Route::put('/archivemail', 'App\Http\Controllers\MailController@ArchivEmail');
-Route::get('getarchiveemail', 'App\Http\Controllers\MailController@GetAllArchiveEmail');
+Route::put('/archivemail', 'App\Http\Controllers\MailController@archiv_email');
+Route::get('getarchiveemail', 'App\Http\Controllers\MailController@get_all_archive_email');
 
 Route::post('/draftemail', 'App\Http\Controllers\MailController@DraftEmail');
 Route::post('/sentdraftemail', 'App\Http\Controllers\MailController@SentDraftEmail');
@@ -75,10 +75,14 @@ Route::post('/incomecategory', 'App\Http\Controllers\IncomeCategoryController@cr
 Route::get('/getincomecategory', 'App\Http\Controllers\IncomeCategoryController@get');
 
 Route::post('/addhospital', 'App\Http\Controllers\HospitalController@create');
+Route::post('/updatehospital', 'App\Http\Controllers\HospitalController@update');
+Route::get('/getsinglehospital/{id}', 'App\Http\Controllers\HospitalController@get_single');
 Route::get('/gethospital', 'App\Http\Controllers\HospitalController@get');
 
 Route::post('/addappointdec', 'App\Http\Controllers\AppointDescripController@create');
+Route::post('/updateappointdec', 'App\Http\Controllers\AppointDescripController@update');
 Route::get('/getappointdec', 'App\Http\Controllers\AppointDescripController@get');
+Route::get('/getsingleappointdec/{id}', 'App\Http\Controllers\AppointDescripController@get_single');
 
 Route::post('/addinsurancomp', 'App\Http\Controllers\InsuranCompanyController@create');
 Route::get('/getinsurancomp', 'App\Http\Controllers\InsuranCompanyController@get');

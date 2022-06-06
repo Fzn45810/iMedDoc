@@ -21,6 +21,7 @@ class AllEmail extends Migration
             $table->string('from_name')->nullable();
             $table->string('subject');
             $table->longText('email_text');
+            $table->string('attachment')->nullable();
             $table->string('cc')->nullable();
             $table->string('bcc')->nullable();
             $table->timestamps();

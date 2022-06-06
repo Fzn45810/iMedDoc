@@ -22,20 +22,22 @@ class InsuranCompanyController extends Controller
         $deduct_tax = $request->deduct_tax;
 
         $validator = Validator::make($request->all(), [
-            'insur_company_name' => 'required',
-            'address1' => 'required',
-            'address2' => 'required',
-            'address3' => 'required',
-            'address4' => 'required',
-            'phone' => 'required',
-            'insurance_form_name' => 'required',
-            'mode_of_paymen' => 'required',
-            'deduct_tax' => 'boolean|required'
+            'insur_company_name' => 'required'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 401);
         }
+
+        if(!is_null($deduct_tax)){
+            $validator = Validator::make($request->all(), [
+                'deduct_tax' => 'boolean|required'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error'=>$validator->errors()], 401);
+            }
+        }        
 
         $insurancompany = new InsuranCompany;
         $insurancompany->insur_company_name = $insur_company_name;

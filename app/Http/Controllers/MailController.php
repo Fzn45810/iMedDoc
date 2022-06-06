@@ -21,21 +21,31 @@ class MailController extends Controller
         $email_text = $request->email_text;
         $cc = $request->cc;
         $bcc = $request->bcc;
+        $attachment = $request->file('attachment');
 
         $validator = Validator::make($request->all(), [
             'to' => 'required|email',
             'email_text' => 'required',
-            'cc' => 'email',
-            'bcc' => 'email'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
+        if(!is_null($attachment)){
+            $extention = $attachment->getClientOriginalExtension();
+
+            $file_name = rand(11111111, 99999999).'.'.$extention;
+            $attachment->move(public_path("emaiattachment/"), $file_name);
+        }else{
+            $file_name = '';
+        }
+
         $details = [
             'subject' => $subject,
             'body' => $email_text,
+            'attachment' => $attachment,
+            'file_name' => $file_name
         ];
 
         Mail::to($to)->send(new \App\Mail\SendMail($details));
@@ -45,6 +55,7 @@ class MailController extends Controller
         $allemail->from = 'muhamadi8is2@gmail.com';
         $allemail->subject = $subject;
         $allemail->email_text = $email_text;
+        $allemail->attachment= $file_name;
         $allemail->cc = $cc;
         $allemail->bcc = $bcc;
         $allemail->save();
@@ -61,15 +72,16 @@ class MailController extends Controller
         // });
     }
 
-    public function GetAllSendEmail(){
+    public function get_all_send_email(){
+        $app_name = 'https://demoimed.nextbitsolution.com/emaiattachment/';
         $getsentmail = DB::table('all_email')
         ->join('email_sent', 'email_sent.email_id', 'all_email.id')
-        ->select('all_email.id', 'to','to_name', 'from','from_name' ,'subject', 'email_text', 'cc', 'bcc')->get();
+        ->select('all_email.id', 'to','to_name', 'from','from_name' ,'subject', 'email_text', 'cc', 'bcc', 'all_email.attachment')->get();
         return response(['data' => $getsentmail]);
     }
 
-    public function ArchivEmail(Request $request){
-        $all_email_id = $request->email_id;
+    public function archiv_email(Request $request){
+        $email_id = $request->email_id;
 
         $validator = Validator::make($request->all(), [
             'email_id' => 'required'
@@ -79,13 +91,13 @@ class MailController extends Controller
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
-        $getsentemail = EmailSent::where('email_id', $all_email_id)->first();
+        $getsentemail = EmailSent::where('email_id', $email_id)->first();
         if($getsentemail){
             $archive_email = new EmailArchive;
-            $archive_email->email_id = $all_email_id;
+            $archive_email->email_id = $email_id;
             $archive_email->save();
 
-            EmailSent::where('email_id', $all_email_id)->delete();
+            EmailSent::where('email_id', $email_id)->delete();
 
             return response(['success' => 'email successfully archive!']);
         }else{
@@ -93,36 +105,46 @@ class MailController extends Controller
         }
     }
 
-    public function GetAllArchiveEmail(){
+    public function get_all_archive_email(){
+        $app_name = 'https://demoimed.nextbitsolution.com/emaiattachment/';
         $get_archive_email = DB::table('all_email')
         ->join('email_archive', 'email_archive.email_id', 'all_email.id')
-        ->select('all_email.id', 'to','to_name', 'from','from_name' ,'subject', 'email_text', 'cc', 'bcc')->get();
+        ->select('all_email.id', 'to','to_name', 'from','from_name' ,'subject', 'email_text', 'cc', 'bcc', 'all_email.attachment')->get();
         return response(['data' => $get_archive_email]);
     }
 
     public function DraftEmail(Request $request){
-
         $to = $request->to;
         $subject  = $request->subject;
         $email_text = $request->email_text;
         $cc = $request->cc;
         $bcc = $request->bcc;
+        $attachment = $request->file('attachment');
 
-        // $validator = Validator::make($request->all(), [
-        //     'to' => 'email',
-        //     'cc' => 'email',
-        //     'bcc' => 'email'
-        // ]);
+        if(!is_null($to)){
+            $validator = Validator::make($request->all(), [
+                'to' => 'email'
+            ]);
 
-        // if ($validator->fails()) {
-        //     return response()->json(['error'=>$validator->errors()], 401);
-        // }
+            if ($validator->fails()) {
+                return response()->json(['error'=>$validator->errors()], 401);
+            }
+        }
+
+        if(!is_null($attachment)){
+            $extention = $attachment->getClientOriginalExtension();
+            $file_name = rand(11111111, 99999999).'.'.$extention;
+            $attachment->move(public_path("emaiattachment/"), $file_name);
+        }else{
+            $file_name = '';
+        }
 
         $allemail = new AllEmail;
         $allemail->to = $to;
         $allemail->from = 'muhamadi8is2@gmail.com';
         $allemail->subject = $subject;
         $allemail->email_text = $email_text;
+        $allemail->attachment = $file_name;
         $allemail->cc = $cc;
         $allemail->bcc = $bcc;
         $allemail->save();
@@ -137,11 +159,14 @@ class MailController extends Controller
     public function SentDraftEmail(Request $request){
         $all_email_id = $request->email_id;
 
+        $get_draft = AllEmail::where('id', $all_email_id)->first();
+
         $to = $request->to;
         $subject  = $request->subject;
         $email_text = $request->email_text;
         $cc = $request->cc;
         $bcc = $request->bcc;
+        $attachment = $request->file('attachment');
 
         $validator = Validator::make($request->all(), [
             'to' => 'required|email',
@@ -152,14 +177,28 @@ class MailController extends Controller
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
+        if(is_null($get_draft)){
+            return response(['error' => 'draft email not found!']);
+        }
+
+        if(!is_null($attachment)){
+            $extention = $attachment->getClientOriginalExtension();
+            $file_name = rand(11111111, 99999999).'.'.$extention;
+            $attachment->move(public_path("emaiattachment/"), $file_name);
+        }else{
+            $file_name = '';
+        }
+
         $details = [
             'subject' => $subject,
             'body' => $email_text,
+            'attachment' => $attachment,
+            'file_name' => $file_name
         ];
 
         Mail::to($to)->send(new \App\Mail\SendMail($details));
 
-        AllEmail::where('id', $all_email_id)->update(['to' => $to, 'subject' => $subject, 'email_text' => $email_text, 'cc' => $cc, 'bcc' => $bcc]);
+        AllEmail::where('id', $all_email_id)->update(['to' => $to, 'subject' => $subject, 'email_text' => $email_text, 'cc' => $cc, 'bcc' => $bcc, 'attachment' => $file_name]);
 
         $sendemail = new EmailSent;
         $sendemail->email_id = $all_email_id;
@@ -167,13 +206,14 @@ class MailController extends Controller
 
         EmailDrafts::where('email_id', $all_email_id)->delete();
 
-        return response(['success' => 'email successfully send!']);
+        return response(['success' => 'email successfully sent!']);
     }
 
     public function GetDraftEmail(){
+        $app_name = 'https://demoimed.nextbitsolution.com/emaiattachment/';
         $get_draft_email = DB::table('all_email')
         ->join('email_drafts', 'email_drafts.email_id', 'all_email.id')
-        ->select('all_email.id', 'to','to_name', 'from','from_name' ,'subject', 'email_text', 'cc', 'bcc')->get();
+        ->select('all_email.id', 'to','to_name', 'from','from_name' ,'subject', 'email_text', 'cc', 'bcc', 'all_email.attachment')->get();
         return response(['data' => $get_draft_email]);
     }
 }
