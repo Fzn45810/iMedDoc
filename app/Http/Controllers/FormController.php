@@ -28,14 +28,20 @@ class FormController extends Controller
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
-        $form = new Form;
-        $form->status = $status;
-        $form->form_name = $form_name;
-        $form->is_default = $is_default;
-        $form->form_type = $form_type;
-        $form->save();
+        if(trim($form_type) == 'Admission Forms' || trim($form_type) == 'Requesting Forms' || trim($form_type) == 'Insurance Forms'){
 
-        return response(['success' => 'successfully create!']);
+            $form = new Form;
+            $form->status = $status;
+            $form->form_name = $form_name;
+            $form->is_default = $is_default;
+            $form->form_type = $form_type;
+            $form->save();
+
+            return response(['success' => 'successfully create!']);
+
+        }else{
+            return response(['error' => 'form_type should be Admission Forms or Requesting Forms or Insurance Forms']);
+        }
     }
 
     public function get(){

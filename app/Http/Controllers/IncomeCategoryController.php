@@ -30,6 +30,32 @@ class IncomeCategoryController extends Controller
         return response(['success' => 'successfully create!']);
     }
 
+    public function update(Request $request){
+        $income_category_id = $request->income_category_id;
+        $category_name = $request->category_name;
+        // Should be 1 or 0
+        $is_default = $request->is_default;
+
+        $validator = Validator::make($request->all(), [
+            'income_category_id' => 'required|exists:income_category,id',
+            'category_name' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 401);
+        }
+
+        IncomeCategory::where('id', $income_category_id)
+        ->update(['category_name' => $category_name, 'is_default' => $is_default]);
+
+        return response(['success' => 'successfully updated!']);
+    }
+
+    public function get_single($id){
+        $get_all = IncomeCategory::where('id', $id)->select('id', 'category_name', 'is_default')->first();
+        return response(['data' => $get_all]);
+    }
+
     public function get(){
         $get_all = IncomeCategory::select('id', 'category_name', 'is_default')->get();
         return response(['data' => $get_all]);

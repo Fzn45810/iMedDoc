@@ -94,9 +94,23 @@ class DictationController extends Controller
         $get_data = DB::table('dictation')
         ->join('patient', 'patient.user_id', 'dictation.user_id')
         ->where('dictation.id', $id)
-        ->select('dictation.id', 'dictation.dictation_date', 'patient.dname', 'patient.surname', 'patient.user_id', 'dictation.dictation_time', 'dictation.duration', 'dictation.status')
-        ->get();
+        ->select('dictation.id', 'dictation.dictation_date', 'patient.dname', 'patient.surname', 'patient.user_id', 'dictation.dictation_time', 'dictation.duration', 'dictation.status', 'dictation.file_name')
+        ->first();
 
-        return response(['data' => $get_data]);
+
+        $app_name = 'https://demoimed.nextbitsolution.com/audio/';
+        
+        $object = new \stdClass();
+        $object->dictation_id = $get_data->id;
+        $object->dictation_date = $get_data->dictation_date;
+        $object->dname = $get_data->dname;
+        $object->surname = $get_data->surname;
+        $object->patient_id = $get_data->user_id;
+        $object->dictation_time = $get_data->dictation_time;
+        $object->duration = $get_data->duration;
+        $object->status = $get_data->status;
+        $object->file_name = $app_name . $get_data->file_name;
+
+        return response(['data' => $object]);
     }
 }

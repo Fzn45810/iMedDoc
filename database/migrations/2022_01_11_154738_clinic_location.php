@@ -26,6 +26,7 @@ class ClinicLocation extends Migration
             $table->string('longitude')->nullable();
 
             $table->foreignId('income_cate_id')
+            ->nullable()
             ->references('id')->on('income_category')
             ->onDelete('cascade');
 

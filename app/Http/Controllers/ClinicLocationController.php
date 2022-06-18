@@ -23,19 +23,21 @@ class ClinicLocationController extends Controller
         $income_cate_id = $request->income_cate_id;
 
         $validator = Validator::make($request->all(), [
-            'locatio_name' => 'required',
-            'address1' => 'required',
-            'address2' => 'required',
-            'address3' => 'required',
-            'address4' => 'required',
-            'phone' => 'required',
-            'latitude' => 'required',
-            'longitude' => 'required',
-            'income_cate_id' => 'required|exists:income_category,id'
+            'locatio_name' => 'required'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 401);
+        }
+
+        if(!is_null($income_cate_id)){
+            $validator = Validator::make($request->all(), [
+                'income_cate_id' => 'required|exists:income_category,id'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error'=>$validator->errors()], 401);
+            }
         }
 
         $cliniclocation = new ClinicLocation;
@@ -50,15 +52,60 @@ class ClinicLocationController extends Controller
         $cliniclocation->income_cate_id = $income_cate_id;
         $cliniclocation->save();
 
-        return response(['success' => 'successfully added!']);
+        return response(['success' => 'successfully create!']);
+    }
+
+    public function update(Request $request){
+        $clinic_location_id = $request->clinic_location_id;
+        $locatio_name = $request->locatio_name;
+        $address1  = $request->address1;
+        $address2 = $request->address2;
+        $address3 = $request->address3;
+        $address4 = $request->address4;
+        $phone = $request->phone;
+        $latitude = $request->latitude;
+        $longitude = $request->longitude;
+
+        $income_cate_id = $request->income_cate_id;
+
+        $validator = Validator::make($request->all(), [
+            'clinic_location_id' => 'required|exists:clinic_location,id',
+            'locatio_name' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 401);
+        }
+
+        if(!is_null($income_cate_id)){
+            $validator = Validator::make($request->all(), [
+                'income_cate_id' => 'required|exists:income_category,id'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error'=>$validator->errors()], 401);
+            }
+        }
+
+        ClinicLocation::where('id', $clinic_location_id)->update(['locatio_name' => $locatio_name, 'address1' => $address1, 'address2' => $address2, 'address3' => $address3, 'address4' => $address4, 'phone' => $phone, 'latitude' => $latitude, 'longitude' => $longitude, 'income_cate_id' => $income_cate_id]);
+
+        return response(['success' => 'successfully updated!']);
+    }
+
+    public function get_single($id){
+        $get_all = DB::table('clinic_location')
+        ->leftjoin('income_category', 'clinic_location.income_cate_id', 'income_category.id')
+        ->select('clinic_location.id', 'locatio_name', 'address1', 'address2', 'address3', 'address4', 'phone', 'latitude', 'longitude', 'income_cate_id', 'category_name', 'is_default')
+        ->where('clinic_location.id', $id)
+        ->first();
+        return response(['data' => $get_all]);
     }
 
     public function get(){
         $get_all = DB::table('clinic_location')
-        ->join('income_category', 'clinic_location.income_cate_id', 'income_category.id')
+        ->leftjoin('income_category', 'clinic_location.income_cate_id', 'income_category.id')
         ->select('clinic_location.id', 'locatio_name', 'address1', 'address2', 'address3', 'address4', 'phone', 'latitude', 'longitude', 'income_cate_id', 'category_name', 'is_default')
         ->get();
         return response(['data' => $get_all]);
-
     }
 }

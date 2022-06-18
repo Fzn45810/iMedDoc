@@ -17,10 +17,12 @@ class InsuProceRelation extends Migration
             $table->id();
 
             $table->foreignId('insurance_id')
+            ->nullable()
             ->references('id')->on('insurance_company')
             ->onDelete('cascade');
 
             $table->foreignId('procedures_id')
+            ->nullable()
             ->references('id')->on('procedures')
             ->onDelete('cascade');
 

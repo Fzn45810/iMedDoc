@@ -24,7 +24,7 @@ class InsuranceCompany extends Migration
             $table->string('phone')->nullable();
             $table->string('insurance_form_name')->nullable();
             $table->string('mode_of_paymen')->nullable();
-            $table->boolean('deduct_tax')->default(0);
+            $table->boolean('deduct_tax')->nullable()->default(0);
 
             $table->timestamps();
         });

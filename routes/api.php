@@ -72,7 +72,14 @@ Route::post('/addform', 'App\Http\Controllers\FormController@create');
 Route::get('/getform', 'App\Http\Controllers\FormController@get');
 
 Route::post('/incomecategory', 'App\Http\Controllers\IncomeCategoryController@create');
+Route::post('/updateincomecategory', 'App\Http\Controllers\IncomeCategoryController@update');
 Route::get('/getincomecategory', 'App\Http\Controllers\IncomeCategoryController@get');
+Route::get('/singleincomecategory/{id}', 'App\Http\Controllers\IncomeCategoryController@get_single');
+
+Route::post('/drugdetails', 'App\Http\Controllers\DrugDetails@create');
+Route::post('/updatedrugdetails', 'App\Http\Controllers\DrugDetails@update');
+Route::get('/getdrugdetails', 'App\Http\Controllers\DrugDetails@get');
+Route::get('/singledrugdetails/{id}', 'App\Http\Controllers\DrugDetails@get_single');
 
 Route::post('/addhospital', 'App\Http\Controllers\HospitalController@create');
 Route::post('/updatehospital', 'App\Http\Controllers\HospitalController@update');
@@ -85,6 +92,8 @@ Route::get('/getappointdec', 'App\Http\Controllers\AppointDescripController@get'
 Route::get('/getsingleappointdec/{id}', 'App\Http\Controllers\AppointDescripController@get_single');
 
 Route::post('/addinsurancomp', 'App\Http\Controllers\InsuranCompanyController@create');
+Route::post('/updateinsurancomp', 'App\Http\Controllers\InsuranCompanyController@update');
+Route::get('/getsingleinsurancomp/{id}', 'App\Http\Controllers\InsuranCompanyController@get_single');
 Route::get('/getinsurancomp', 'App\Http\Controllers\InsuranCompanyController@get');
 
 Route::post('/addinsuranplan', 'App\Http\Controllers\InsurancePlaneController@create');
@@ -94,17 +103,22 @@ Route::get('/getsingleinsuranplan/{id}', 'App\Http\Controllers\InsurancePlaneCon
 Route::post('/updateinsuranplan', 'App\Http\Controllers\InsurancePlaneController@update');
 
 Route::post('/procedures', 'App\Http\Controllers\ProceduresController@create');
+Route::post('/updateprocedures', 'App\Http\Controllers\ProceduresController@update');
 Route::get('/getprocedures', 'App\Http\Controllers\ProceduresController@get');
 Route::get('/singleprocedures/{id}', 'App\Http\Controllers\ProceduresController@get_single');
 
 Route::post('/cliniclocation', 'App\Http\Controllers\ClinicLocationController@create');
+Route::post('/updatecliniclocation', 'App\Http\Controllers\ClinicLocationController@update');
+Route::get('/getsinglecliniclocation/{id}', 'App\Http\Controllers\ClinicLocationController@get_single');
 Route::get('/getcliniclocation', 'App\Http\Controllers\ClinicLocationController@get');
 
 Route::post('/appointtype', 'App\Http\Controllers\AppontTypeController@create');
 Route::get('/getappointtype', 'App\Http\Controllers\AppontTypeController@get');
 
 Route::post('/patienttype', 'App\Http\Controllers\BookingController@add_patient_type');
+Route::post('/updatepatienttype', 'App\Http\Controllers\BookingController@update_patient_type');
 Route::get('/getpatienttype', 'App\Http\Controllers\BookingController@get_patient_type');
+Route::get('/getsinglepatienttype/{id}', 'App\Http\Controllers\BookingController@get_single_patient_type');
 
 Route::post('/contacttype', 'App\Http\Controllers\BookingController@add_contact_type');
 Route::get('/getcontacttype', 'App\Http\Controllers\BookingController@get_contact_type');
@@ -116,6 +130,11 @@ Route::post('/bankdetails', 'App\Http\Controllers\BankController@create');
 Route::post('/updatebankdetails', 'App\Http\Controllers\BankController@update');
 Route::get('/getbankdetails', 'App\Http\Controllers\BankController@get');
 Route::get('/singlebankdetails/{id}', 'App\Http\Controllers\BankController@single_get');
+
+Route::post('/expensecategory', 'App\Http\Controllers\ExpenseCategoryController@create');
+Route::post('/updateexpensecategory', 'App\Http\Controllers\ExpenseCategoryController@update');
+Route::get('/getexpensecategory', 'App\Http\Controllers\ExpenseCategoryController@get');
+Route::get('/singleexpensecategory/{id}', 'App\Http\Controllers\ExpenseCategoryController@get_single');
 
 Route::post('/invoice', 'App\Http\Controllers\AccountsController@create_invoice');
 Route::post('/updateinvoice', 'App\Http\Controllers\AccountsController@update_invoice');

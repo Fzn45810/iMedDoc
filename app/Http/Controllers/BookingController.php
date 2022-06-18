@@ -234,8 +234,38 @@ class BookingController extends Controller
         }
     }
 
+    public function update_patient_type(Request $request){
+        $type_id = $request->type_id;
+        $type_name = $request->type_name;
+
+        $validator = Validator::make($request->all(), [
+            'type_id' => 'required|exists:patient_type,id',
+            'type_name' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 401);
+        }
+
+        $get_type = PatientType::where('type_name', $type_name)->first();
+
+        if(!$get_type){
+            PatientType::where('id', $type_id)
+                ->update(['type_name' => $type_name]);
+
+            return response(['success' => 'successfull update!']);
+        }else{
+            return response(['success' => 'already exist!']);
+        }
+    }
+
+    public function get_single_patient_type($id){
+        $get_all = PatientType::where('id', $id)->select('id', 'type_name')->get();
+        return response(['data' => $get_all]);
+    }
+
     public function get_patient_type(){
-        $get_all = PatientType::get();
+        $get_all = PatientType::select('id', 'type_name')->get();
         return response(['data' => $get_all]);
     }
 
