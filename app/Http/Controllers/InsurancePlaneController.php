@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\InsurancePlane;
 use Illuminate\Support\Facades\Validator;
+use App\Imports\ImportInsurancePlane;
+use Excel;
 use DB;
 
 class InsurancePlaneController extends Controller
@@ -65,5 +67,18 @@ class InsurancePlaneController extends Controller
         ->where('insurance_plane.id', $id)
         ->get();
         return response(['data' => $get_all]);
+    }
+
+    public function import_insuranplan(Request $request){
+        $extention = $request->file("importfile")->getClientOriginalExtension();
+        if($extention == 'xlsx' || $extention == 'csv' || $extention == 'XLSX' || $extention == 'CSV'){
+
+            $import_file = $request->file("importfile");
+            Excel::import(new ImportInsurancePlane, $import_file);
+            return response(['success' => 'successfully imported!']);
+            
+        }else{
+            return response(['message' => 'file should be xlsx or csv!']);
+        }
     }
 }

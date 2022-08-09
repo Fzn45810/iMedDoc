@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\InsuranCompany;
 use Illuminate\Support\Facades\Validator;
+use App\Imports\ImportInsurancomp;
+use Excel;
 use DB;
 
 class InsuranCompanyController extends Controller
@@ -106,5 +108,18 @@ class InsuranCompanyController extends Controller
         ->get();
 
         return response(['data' => $get_all]);
+    }
+
+    public function import_insurancomp(Request $request){
+        $extention = $request->file("importfile")->getClientOriginalExtension();
+        if($extention == 'xlsx' || $extention == 'csv' || $extention == 'XLSX' || $extention == 'CSV'){
+
+            $import_file = $request->file("importfile");
+            Excel::import(new ImportInsurancomp, $import_file);
+            return response(['success' => 'successfully imported!']);
+            
+        }else{
+            return response(['message' => 'file should be xlsx or csv!']);
+        }
     }
 }

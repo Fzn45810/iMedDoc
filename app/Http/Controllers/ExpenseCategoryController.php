@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ExpenseCategory;
 use Illuminate\Support\Facades\Validator;
+use App\Imports\ImportExpenseCategory;
+use Excel;
 
 class ExpenseCategoryController extends Controller
 {
@@ -57,5 +59,18 @@ class ExpenseCategoryController extends Controller
         ->get();
 
         return response(['data' => $get_all]);
+    }
+
+    public function import_expensecategory(Request $request){
+        $extention = $request->file("importfile")->getClientOriginalExtension();
+        if($extention == 'xlsx' || $extention == 'csv' || $extention == 'XLSX' || $extention == 'CSV'){
+
+            $import_file = $request->file("importfile");
+            Excel::import(new ImportExpenseCategory, $import_file);
+            return response(['success' => 'successfully imported!']);
+            
+        }else{
+            return response(['message' => 'file should be xlsx or csv!']);
+        }
     }
 }

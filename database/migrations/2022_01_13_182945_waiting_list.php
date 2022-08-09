@@ -17,6 +17,7 @@ class WaitingList extends Migration
             $table->id();
 
             $table->foreignId('patient_id')
+            ->nullable()
             ->references('id')->on('patient')
             ->onDelete('cascade');
 
@@ -27,11 +28,13 @@ class WaitingList extends Migration
             ->references('id')->on('appoint_type')
             ->onDelete('cascade');
 
-            $table->foreignId('procedures_id')->nullable()
+            $table->foreignId('procedures_id')
+            ->nullable()
             ->references('id')->on('procedures')
             ->onDelete('cascade');
 
-            $table->foreignId('appoint_id')->nullable()
+            $table->foreignId('appoint_id')
+            ->nullable()
             ->references('id')->on('appoint_descrip')
             ->onDelete('cascade');
 

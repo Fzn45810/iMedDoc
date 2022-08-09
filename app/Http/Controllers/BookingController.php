@@ -10,6 +10,10 @@ use App\Models\ContactType;
 use App\Models\title;
 use Illuminate\Support\Facades\Validator;
 use DB;
+use App\Imports\ImportPatient;
+use App\Imports\ImportTitleType;
+use App\Imports\ImportContactType;
+use Excel;
 
 class BookingController extends Controller
 {
@@ -325,5 +329,45 @@ class BookingController extends Controller
     public function get_title_type(){
         $get_all = title::select('id', 'title_name')->get();
         return response(['data' => $get_all]);
+    }
+
+    public function import_patient(Request $request){
+        set_time_limit(0);
+        $extention = $request->file("importfile")->getClientOriginalExtension();
+        if($extention == 'xlsx' || $extention == 'csv' || $extention == 'XLSX' || $extention == 'CSV'){
+
+            $import_file = $request->file("importfile");
+            Excel::import(new ImportPatient, $import_file);
+            return response(['success' => 'successfully imported!']);
+            
+        }else{
+            return response(['message' => 'file should be xlsx or csv!']);
+        }
+    }
+
+    public function import_titletype(Request $request){
+        $extention = $request->file("importfile")->getClientOriginalExtension();
+        if($extention == 'xlsx' || $extention == 'csv' || $extention == 'XLSX' || $extention == 'CSV'){
+
+            $import_file = $request->file("importfile");
+            Excel::import(new ImportTitleType, $import_file);
+            return response(['success' => 'successfully imported!']);
+            
+        }else{
+            return response(['message' => 'file should be xlsx or csv!']);
+        }
+    }
+
+    public function import_contact_type(Request $request){
+        $extention = $request->file("importfile")->getClientOriginalExtension();
+        if($extention == 'xlsx' || $extention == 'csv' || $extention == 'XLSX' || $extention == 'CSV'){
+
+            $import_file = $request->file("importfile");
+            Excel::import(new ImportContactType, $import_file);
+            return response(['success' => 'successfully imported!']);
+            
+        }else{
+            return response(['message' => 'file should be xlsx or csv!']);
+        }
     }
 }

@@ -17,10 +17,12 @@ class Contacts extends Migration
             $table->id();
 
             $table->foreignId('contact_type_id')
+            ->nullable()
             ->references('id')->on('contact_type')
             ->onDelete('cascade');
 
             $table->foreignId('title_type_id')
+            ->nullable()
             ->references('id')->on('title_table')
             ->onDelete('cascade');
 

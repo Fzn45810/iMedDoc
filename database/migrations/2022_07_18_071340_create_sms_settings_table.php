@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class InsurancePlane extends Migration
+class CreateSmsSettingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,12 @@ class InsurancePlane extends Migration
      */
     public function up()
     {
-        Schema::create('insurance_plane', function (Blueprint $table) {
+        Schema::create('sms_settings', function (Blueprint $table) {
             $table->id();
 
-            $table->longText('insurance_plane_name')->nullable();
-
-            $table->foreignId('insurance_comp_id')
-            ->nullable()
-            ->references('id')->on('insurance_company')
-            ->onDelete('cascade');
+            $table->string('sms_title');
+            $table->string('sms_content');
+            $table->boolean('sms_enable')->default(true);
 
             $table->timestamps();
         });
@@ -34,6 +31,6 @@ class InsurancePlane extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('insurance_plane');
+        Schema::dropIfExists('sms_settings');
     }
 }

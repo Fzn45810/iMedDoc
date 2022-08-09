@@ -7,6 +7,8 @@ use App\Models\Procedures;
 use App\Models\InsuranceProcedure;
 use App\Models\InsuranCompany;
 use Illuminate\Support\Facades\Validator;
+use App\Imports\ImportProcedures;
+use Excel;
 use DB;
 
 class ProceduresController extends Controller
@@ -231,5 +233,16 @@ class ProceduresController extends Controller
         }
 
         return response(['data' => $excelArray]);
+    }
+
+    public function import_procedures(Request $request){
+        $extention = $request->file("importfile")->getClientOriginalExtension();
+        if($extention == 'xlsx' || $extention == 'csv' || $extention == 'XLSX' || $extention == 'CSV'){
+            $import_file = $request->file("importfile");
+            Excel::import(new ImportProcedures, $import_file);
+            return response(['success' => 'successfully imported!']);
+        }else{
+            return response(['message' => 'file should be xlsx or csv!']);
+        }
     }
 }

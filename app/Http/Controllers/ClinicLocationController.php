@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ClinicLocation;
 use Illuminate\Support\Facades\Validator;
+use App\Imports\ImportClinicLocation;
+use Excel;
 use DB;
 
 class ClinicLocationController extends Controller
@@ -107,5 +109,18 @@ class ClinicLocationController extends Controller
         ->select('clinic_location.id', 'locatio_name', 'address1', 'address2', 'address3', 'address4', 'phone', 'latitude', 'longitude', 'income_cate_id', 'category_name', 'is_default')
         ->get();
         return response(['data' => $get_all]);
+    }
+
+    public function import_cliniclocation(Request $request){
+        $extention = $request->file("importfile")->getClientOriginalExtension();
+        if($extention == 'xlsx' || $extention == 'csv' || $extention == 'XLSX' || $extention == 'CSV'){
+
+            $import_file = $request->file("importfile");
+            Excel::import(new ImportClinicLocation, $import_file);
+            return response(['success' => 'successfully imported!']);
+            
+        }else{
+            return response(['message' => 'file should be xlsx or csv!']);
+        }
     }
 }

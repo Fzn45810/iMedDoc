@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\AppointDescrip;
 use Illuminate\Support\Facades\Validator;
 use DB;
+use App\Imports\ImportAppointDescrip;
+use Excel;
 
 class AppointDescripController extends Controller
 {
@@ -93,5 +95,18 @@ class AppointDescripController extends Controller
         ->select('appoint_descrip.id', 'appoint_description', 'procedures.color_code', 'appointments', 'procedure_name', 'code', 'rate', 'template', 'duration_h', 'duration_m')
         ->get();
         return response(['data' => $get_all]);
+    }
+
+    public function import_appointdec(Request $request){
+        $extention = $request->file("importfile")->getClientOriginalExtension();
+        if($extention == 'xlsx' || $extention == 'csv' || $extention == 'XLSX' || $extention == 'CSV'){
+
+            $import_file = $request->file("importfile");
+            Excel::import(new ImportAppointDescrip, $import_file);
+            return response(['success' => 'successfully imported!']);
+            
+        }else{
+            return response(['message' => 'file should be xlsx or csv!']);
+        }
     }
 }

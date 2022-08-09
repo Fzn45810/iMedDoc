@@ -25,6 +25,8 @@ Route::post('updatepatient', 'App\Http\Controllers\BookingController@update_pati
 Route::get('getpatient', 'App\Http\Controllers\BookingController@get_all_patient');
 Route::get('singlepatient/{id}', 'App\Http\Controllers\BookingController@get_single_patient');
 
+Route::post('importpatient', 'App\Http\Controllers\BookingController@import_patient');
+
 Route::post('waitinglist', 'App\Http\Controllers\WaitingListController@create');
 Route::post('waitinglistupdate', 'App\Http\Controllers\WaitingListController@update');
 Route::get('getwaitinglist', 'App\Http\Controllers\WaitingListController@GetWaitinglist');
@@ -67,6 +69,7 @@ Route::post('/update', 'App\Http\Controllers\ContactsController@update');
 Route::get('/getsingle/{id}', 'App\Http\Controllers\ContactsController@single_contact');
 Route::get('getcontacts', 'App\Http\Controllers\ContactsController@get');
 Route::get('getcontacttype/{type}', 'App\Http\Controllers\ContactsController@contact_type');
+Route::post('importcontact', 'App\Http\Controllers\ContactsController@import_contact');
 
 Route::post('/addform', 'App\Http\Controllers\FormController@create');
 Route::get('/getform', 'App\Http\Controllers\FormController@get');
@@ -75,6 +78,7 @@ Route::post('/incomecategory', 'App\Http\Controllers\IncomeCategoryController@cr
 Route::post('/updateincomecategory', 'App\Http\Controllers\IncomeCategoryController@update');
 Route::get('/getincomecategory', 'App\Http\Controllers\IncomeCategoryController@get');
 Route::get('/singleincomecategory/{id}', 'App\Http\Controllers\IncomeCategoryController@get_single');
+Route::post('importincomecategory', 'App\Http\Controllers\IncomeCategoryController@import_incomecategory');
 
 Route::post('/drugdetails', 'App\Http\Controllers\DrugDetails@create');
 Route::post('/updatedrugdetails', 'App\Http\Controllers\DrugDetails@update');
@@ -90,27 +94,31 @@ Route::post('/addappointdec', 'App\Http\Controllers\AppointDescripController@cre
 Route::post('/updateappointdec', 'App\Http\Controllers\AppointDescripController@update');
 Route::get('/getappointdec', 'App\Http\Controllers\AppointDescripController@get');
 Route::get('/getsingleappointdec/{id}', 'App\Http\Controllers\AppointDescripController@get_single');
+Route::post('importappointdec', 'App\Http\Controllers\AppointDescripController@import_appointdec');
 
 Route::post('/addinsurancomp', 'App\Http\Controllers\InsuranCompanyController@create');
 Route::post('/updateinsurancomp', 'App\Http\Controllers\InsuranCompanyController@update');
 Route::get('/getsingleinsurancomp/{id}', 'App\Http\Controllers\InsuranCompanyController@get_single');
 Route::get('/getinsurancomp', 'App\Http\Controllers\InsuranCompanyController@get');
+Route::post('importinsurancomp', 'App\Http\Controllers\InsuranCompanyController@import_insurancomp');
 
 Route::post('/addinsuranplan', 'App\Http\Controllers\InsurancePlaneController@create');
 Route::get('/getinsuranplan', 'App\Http\Controllers\InsurancePlaneController@get');
 Route::get('/getsingleinsuranplan/{id}', 'App\Http\Controllers\InsurancePlaneController@get_single');
-
 Route::post('/updateinsuranplan', 'App\Http\Controllers\InsurancePlaneController@update');
-
-Route::post('/procedures', 'App\Http\Controllers\ProceduresController@create');
-Route::post('/updateprocedures', 'App\Http\Controllers\ProceduresController@update');
-Route::get('/getprocedures', 'App\Http\Controllers\ProceduresController@get');
-Route::get('/singleprocedures/{id}', 'App\Http\Controllers\ProceduresController@get_single');
+Route::post('importinsuranplan', 'App\Http\Controllers\InsurancePlaneController@import_insuranplan');
 
 Route::post('/cliniclocation', 'App\Http\Controllers\ClinicLocationController@create');
 Route::post('/updatecliniclocation', 'App\Http\Controllers\ClinicLocationController@update');
 Route::get('/getsinglecliniclocation/{id}', 'App\Http\Controllers\ClinicLocationController@get_single');
 Route::get('/getcliniclocation', 'App\Http\Controllers\ClinicLocationController@get');
+Route::post('importcliniclocation', 'App\Http\Controllers\ClinicLocationController@import_cliniclocation');
+
+Route::post('/procedures', 'App\Http\Controllers\ProceduresController@create');
+Route::post('/updateprocedures', 'App\Http\Controllers\ProceduresController@update');
+Route::get('/getprocedures', 'App\Http\Controllers\ProceduresController@get');
+Route::get('/singleprocedures/{id}', 'App\Http\Controllers\ProceduresController@get_single');
+Route::post('importprocedures', 'App\Http\Controllers\ProceduresController@import_procedures');
 
 Route::post('/appointtype', 'App\Http\Controllers\AppontTypeController@create');
 Route::get('/getappointtype', 'App\Http\Controllers\AppontTypeController@get');
@@ -122,9 +130,11 @@ Route::get('/getsinglepatienttype/{id}', 'App\Http\Controllers\BookingController
 
 Route::post('/contacttype', 'App\Http\Controllers\BookingController@add_contact_type');
 Route::get('/getcontacttype', 'App\Http\Controllers\BookingController@get_contact_type');
+Route::post('importcontacttype', 'App\Http\Controllers\BookingController@import_contact_type');
 
 Route::post('/titletype', 'App\Http\Controllers\BookingController@add_title_type');
 Route::get('/gettitletype', 'App\Http\Controllers\BookingController@get_title_type');
+Route::post('importtitletype', 'App\Http\Controllers\BookingController@import_titletype');
 
 Route::post('/bankdetails', 'App\Http\Controllers\BankController@create');
 Route::post('/updatebankdetails', 'App\Http\Controllers\BankController@update');
@@ -135,6 +145,7 @@ Route::post('/expensecategory', 'App\Http\Controllers\ExpenseCategoryController@
 Route::post('/updateexpensecategory', 'App\Http\Controllers\ExpenseCategoryController@update');
 Route::get('/getexpensecategory', 'App\Http\Controllers\ExpenseCategoryController@get');
 Route::get('/singleexpensecategory/{id}', 'App\Http\Controllers\ExpenseCategoryController@get_single');
+Route::post(' ', 'App\Http\Controllers\ExpenseCategoryController@import_expensecategory');
 
 Route::post('/invoice', 'App\Http\Controllers\AccountsController@create_invoice');
 Route::post('/updateinvoice', 'App\Http\Controllers\AccountsController@update_invoice');
@@ -167,3 +178,8 @@ Route::post('/updatestickynotedes', 'App\Http\Controllers\StickyNoteController@u
 Route::post('/upstickynoteisactive', 'App\Http\Controllers\StickyNoteController@update_stickynote_is_active');
 Route::get('/getstickynotes', 'App\Http\Controllers\StickyNoteController@get_sticky_notes');
 Route::get('/getsinglestickynote/{id}', 'App\Http\Controllers\StickyNoteController@get_single_sticky_note');
+
+Route::post('/smssetting', 'App\Http\Controllers\SmsSetting@create');
+Route::post('/updatesmssetting', 'App\Http\Controllers\SmsSetting@update');
+Route::get('/getsmssetting', 'App\Http\Controllers\SmsSetting@get');
+Route::get('/getsinglesmssetting/{id}', 'App\Http\Controllers\SmsSetting@get_single');

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\IncomeCategory;
 use Illuminate\Support\Facades\Validator;
+use App\Imports\ImportIncomeCategory;
+use Excel;
 use DB;
 
 class IncomeCategoryController extends Controller
@@ -59,5 +61,18 @@ class IncomeCategoryController extends Controller
     public function get(){
         $get_all = IncomeCategory::select('id', 'category_name', 'is_default')->get();
         return response(['data' => $get_all]);
+    }
+
+    public function import_incomecategory(Request $request){
+        $extention = $request->file("importfile")->getClientOriginalExtension();
+        if($extention == 'xlsx' || $extention == 'csv' || $extention == 'XLSX' || $extention == 'CSV'){
+
+            $import_file = $request->file("importfile");
+            Excel::import(new ImportIncomeCategory, $import_file);
+            return response(['success' => 'successfully imported!']);
+            
+        }else{
+            return response(['message' => 'file should be xlsx or csv!']);
+        }
     }
 }

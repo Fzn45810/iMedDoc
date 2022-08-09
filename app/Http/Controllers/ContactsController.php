@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Contacts;
 use Illuminate\Support\Facades\Validator;
+use App\Imports\ImportContacts;
 use DB;
+use Excel;
 
 class ContactsController extends Controller
 {
@@ -29,25 +31,32 @@ class ContactsController extends Controller
 
         $validator = Validator::make($request->all(), [
             'contact_type_id' => 'required|exists:contact_type,id',
-            'title_type_id' => 'required|exists:title_table,id',
             'surname' => 'required',
-            'fname' => 'required',
-            'dname' => 'required',
-            'entityname' => 'required',
-            'address1' => 'required',
-            'address2' => 'required',
-            'address3' => 'required',
-            'address4' => 'required',
-            'workphone' => 'required',
-            'homephone' => 'required',
-            'mobile' => 'required',
-            'email' => 'required|email',
-            'website' => 'required',
-            'fax' => 'required'
+            'dname' => 'required'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 401);
+        }
+
+        if(!is_null($title_type_id)){
+            $validator = Validator::make($request->all(), [
+                'title_type_id' => 'required|exists:title_table,id'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error'=>$validator->errors()], 401);
+            }
+        }
+
+        if(!is_null($email)){
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error'=>$validator->errors()], 401);
+            }
         }
 
         $contacts = new Contacts;
@@ -93,25 +102,32 @@ class ContactsController extends Controller
 
         $validator = Validator::make($request->all(), [
             'contact_type_id' => 'required|exists:contact_type,id',
-            'title_type_id' => 'required|exists:title_table,id',
             'surname' => 'required',
-            'fname' => 'required',
-            'dname' => 'required',
-            'entityname' => 'required',
-            'address1' => 'required',
-            'address2' => 'required',
-            'address3' => 'required',
-            'address4' => 'required',
-            'workphone' => 'required',
-            'homephone' => 'required',
-            'mobile' => 'required',
-            'email' => 'required|email',
-            'website' => 'required',
-            'fax' => 'required'
+            'dname' => 'required'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 401);
+        }
+
+        if(!is_null($title_type_id)){
+            $validator = Validator::make($request->all(), [
+                'title_type_id' => 'required|exists:title_table,id'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error'=>$validator->errors()], 401);
+            }
+        }
+
+        if(!is_null($email)){
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error'=>$validator->errors()], 401);
+            }
         }
 
         Contacts::where('id', $id)->update(['contact_type_id' => $contact_type_id, 'title_type_id' => $title_type_id, 'surname' => $surname, 'fname' => $fname, 'dname' => $dname, 'entityname' => $entityname, 'address1' => $address1, 'address2' => $address2, 'address3' => $address3, 'address4' => $address4, 'workphone' => $workphone, 'homephone' => $homephone, 'mobile' => $mobile, 'email' => $email, 'website' => $website, 'fax' => $fax]);
@@ -132,21 +148,33 @@ class ContactsController extends Controller
     public function get(){
         $getall = DB::table('contacts')
         ->join('contact_type', 'contact_type.id', '=', 'contacts.contact_type_id')
-        ->join('title_table', 'title_table.id', '=', 'contacts.title_type_id')
+        ->leftjoin('title_table', 'title_table.id', '=', 'contacts.title_type_id')
         ->select('contacts.id', 'title_name', 'dname', 'email', 'workphone', 'mobile', 'address1', 'address2')
         ->get();
 
         return response(['data' => $getall]);
     }
 
-
     public function contact_type($type){
         $getall = DB::table('contacts')
         ->join('contact_type', 'contact_type.id', '=', 'contacts.contact_type_id')
-        ->join('title_table', 'title_table.id', '=', 'contacts.title_type_id')
-        ->where('title_name', $type)
+        ->leftjoin('title_table', 'title_table.id', '=', 'contacts.title_type_id')
+        ->where('type_name', $type)
         ->get();
 
         return response(['data' => $getall]);
+    }
+
+    public function import_contact(Request $request){
+        $extention = $request->file("importfile")->getClientOriginalExtension();
+        if($extention == 'xlsx' || $extention == 'csv' || $extention == 'XLSX' || $extention == 'CSV'){
+
+            $import_file = $request->file("importfile");
+            Excel::import(new ImportContacts, $import_file);
+            return response(['success' => 'successfully imported!']);
+            
+        }else{
+            return response(['message' => 'file should be xlsx or csv!']);
+        }
     }
 }

@@ -21,10 +21,11 @@ class PatientTable extends Migration
             ->onDelete('cascade');
 
             $table->foreignId('title_type_id')
+            ->nullable()
             ->references('id')->on('title_table')
             ->onDelete('cascade');
 
-            $table->string('surname');
+            $table->string('surname')->nullable();
             $table->string('dname')->nullable();
             $table->string('address1')->nullable();
             $table->string('address2')->nullable();
