@@ -14,6 +14,7 @@ use App\Imports\ImportPatient;
 use App\Imports\ImportTitleType;
 use App\Imports\ImportContactType;
 use Excel;
+use Illuminate\Support\Facades\Hash;
 
 class BookingController extends Controller
 {
@@ -195,7 +196,7 @@ class BookingController extends Controller
     public function get_all_patient(){
         $getPatient = DB::table('users')
         ->join('patient', 'patient.user_id', 'users.id')
-        ->join('title_table', 'title_table.id', '=', 'patient.title_type_id')
+        ->leftjoin('title_table', 'title_table.id', '=', 'patient.title_type_id')
         ->select('users.id', 'title_table.title_name', 'dname', 'dateOfBirth', 'email', 'homePhone', 'mobile', 'address1', 'address2')->get();
         return response(['data' => $getPatient]);
     }
