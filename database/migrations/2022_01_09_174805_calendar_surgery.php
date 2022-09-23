@@ -20,9 +20,9 @@ class CalendarSurgery extends Migration
             ->references('id')->on('appoint_type')
             ->onDelete('cascade');
 
-            $table->foreignId('calendar_id')
-            ->references('id')->on('calendar')
-            ->onDelete('cascade');
+            // $table->foreignId('calendar_id')
+            // ->references('id')->on('calendar')
+            // ->onDelete('cascade');
 
             $table->foreignId('patient_id')
             ->references('id')->on('patient')

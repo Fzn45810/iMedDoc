@@ -163,8 +163,8 @@ class HospitalController extends Controller
 
     public function get_single($id){
         $get_all = DB::table('hospital')
-        ->join('form', 'hospital.forms_id', 'form.id')
-        ->join('income_category', 'hospital.income_category_id', 'income_category.id')
+        ->leftjoin('form', 'hospital.forms_id', 'form.id')
+        ->leftjoin('income_category', 'hospital.income_category_id', 'income_category.id')
         ->where('hospital.id', $id)
         ->select('hospital.id', 'form.form_name', 'income_category.category_name', 'hospital.hospital_name', 'hospital.address1', 'hospital.address2', 'hospital.address3', 'hospital.address4')
         ->get();

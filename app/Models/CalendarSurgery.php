@@ -12,7 +12,7 @@ class CalendarSurgery extends Model
     protected $fillable = [
        'id',
        'appoint_type_id',
-       'calendar_id',
+       // 'calendar_id',
        'patient_id',
        'hospital_id',
        'surgery_from',

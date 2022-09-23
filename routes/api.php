@@ -18,7 +18,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['middleware' => 'auth:sanctum'], function(){
+// Route::group(['middleware' => 'auth:sanctum'], function(){
     
     Route::get('getdoctor', 'App\Http\Controllers\Doctor@get_doctor');
 
@@ -26,7 +26,6 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::post('updatepatient', 'App\Http\Controllers\BookingController@update_patient');
     Route::get('getpatient', 'App\Http\Controllers\BookingController@get_all_patient');
     Route::get('singlepatient/{id}', 'App\Http\Controllers\BookingController@get_single_patient');
-
     Route::post('importpatient', 'App\Http\Controllers\BookingController@import_patient');
 
     Route::post('waitinglist', 'App\Http\Controllers\WaitingListController@create');
@@ -39,32 +38,37 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 
     Route::post('/sendemail', 'App\Http\Controllers\MailController@SendEmail');
     Route::get('getsentemail', 'App\Http\Controllers\MailController@get_all_send_email');
-
     Route::put('/archivemail', 'App\Http\Controllers\MailController@archiv_email');
     Route::get('getarchiveemail', 'App\Http\Controllers\MailController@get_all_archive_email');
-
     Route::post('/draftemail', 'App\Http\Controllers\MailController@DraftEmail');
     Route::post('/sentdraftemail', 'App\Http\Controllers\MailController@SentDraftEmail');
     Route::get('getdraftemail', 'App\Http\Controllers\MailController@GetDraftEmail');
 
     // Calendar
     Route::post('/calendar', 'App\Http\Controllers\CalendarController@create');
-    Route::post('/calendarappoint', 'App\Http\Controllers\CalendarController@CreateAppointment');
-    Route::get('/getcalendarappoint', 'App\Http\Controllers\CalendarController@get_calendar_appoint');
+    Route::post('/updatecalendar', 'App\Http\Controllers\CalendarController@calendar_update');
+    Route::get('getsinglecalendar/{id}', 'App\Http\Controllers\CalendarController@get_single_calendar');
+    Route::get('getcalendar', 'App\Http\Controllers\CalendarController@get_calendar');
 
+    Route::post('/calendarappoint', 'App\Http\Controllers\CalendarController@create_appointment');
+    Route::post('/updatecalendarappoint', 'App\Http\Controllers\CalendarController@update_appointment');
+    Route::get('/getcalendarappoint', 'App\Http\Controllers\CalendarController@get_calendar_appoint');
+    Route::get('/getsinglecalendarappoint/{id}', 'App\Http\Controllers\CalendarController@get_single_calendar_appoint');
     Route::patch('/updateappointsataus/{id}/{value}', 'App\Http\Controllers\CalendarController@update_appoint_sataus');
 
     Route::post('/calendarsurgery', 'App\Http\Controllers\CalendarController@create_surgery');
+    Route::post('/updatecalendarsurgery', 'App\Http\Controllers\CalendarController@update_surgery');
     Route::get('/getcalendarsurgery', 'App\Http\Controllers\CalendarController@get_surgery');
-
+    Route::get('/getsinglecalendarsurgery/{id}', 'App\Http\Controllers\CalendarController@get_single_surgery');
     Route::patch('/updatesurgerysataus/{id}/{value}', 'App\Http\Controllers\CalendarController@update_surgery_sataus');
 
     Route::post('/calendartasks', 'App\Http\Controllers\CalendarController@create_tasks');
+    Route::post('/updatecalendartasks', 'App\Http\Controllers\CalendarController@update_tasks');
     Route::get('/getcalendartasks', 'App\Http\Controllers\CalendarController@get_tasks');
+    Route::get('/getsinglecalendartasks/{id}', 'App\Http\Controllers\CalendarController@get_single_tasks');
     Route::patch('/updatetaskssataus/{id}/{value}', 'App\Http\Controllers\CalendarController@update_tasks_sataus');
 
-    Route::get('getcalendar', 'App\Http\Controllers\CalendarController@GetCalendar');
-    Route::post('/bydatecalendar', 'App\Http\Controllers\CalendarController@getDateCalendar');
+    Route::post('/bydatecalendar', 'App\Http\Controllers\CalendarController@get_date_calendar');
 
     Route::post('/contacts', 'App\Http\Controllers\ContactsController@create');
     Route::post('/update', 'App\Http\Controllers\ContactsController@update');
@@ -72,6 +76,7 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::get('getcontacts', 'App\Http\Controllers\ContactsController@get');
     Route::get('getcontacttype/{type}', 'App\Http\Controllers\ContactsController@contact_type');
     Route::post('importcontact', 'App\Http\Controllers\ContactsController@import_contact');
+    Route::delete('deletecontact/{id}', 'App\Http\Controllers\ContactsController@delete');
 
     Route::post('/addform', 'App\Http\Controllers\FormController@create');
     Route::get('/getform', 'App\Http\Controllers\FormController@get');
@@ -185,6 +190,6 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::post('/updatesmssetting', 'App\Http\Controllers\SmsSetting@update');
     Route::get('/getsmssetting', 'App\Http\Controllers\SmsSetting@get');
     Route::get('/getsinglesmssetting/{id}', 'App\Http\Controllers\SmsSetting@get_single');
-});
+// });
 
 Route::post("login", [App\Http\Controllers\AuthenticationController::class,'index']);

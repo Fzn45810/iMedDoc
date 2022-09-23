@@ -620,7 +620,7 @@ class AccountsController extends Controller
         return response(['data' => $get_lodgement_all]);
     }
 
-    public function get_single__lodgement($id){
+    public function get_single_lodgement($id){
         $get_lodgement = DB::table('lodgement')
         ->join('bank_details', 'bank_details.id', 'lodgement.bank_id')
         ->select('lodgement.id', 'lodgement.date', 'lodgement.bank_id' ,'bank_details.bank_name', 'lodgement.total_amount', 'lodgement.lodgement_memo')

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Contacts;
+use App\Models\receipt;
 use Illuminate\Support\Facades\Validator;
 use App\Imports\ImportContacts;
 use DB;
@@ -79,6 +80,21 @@ class ContactsController extends Controller
         $contacts->save();
 
         return response(['success' => 'successfully create!']);
+    }
+
+    public function delete($id){
+        $contact = Contacts::find($id);
+        if($contact){
+            $receipt = receipt::where('third_party', $id)->first(); 
+            if($receipt){
+                return response(['message' => 'contact used in receipt!']);
+            }else{
+                $contact->delete();
+                return response(['success' => 'successfully deleted!']);
+            }
+        }else{
+            return response(['message' => 'contact not found!']);
+        }
     }
 
     public function update(Request $request){
@@ -160,6 +176,7 @@ class ContactsController extends Controller
         ->join('contact_type', 'contact_type.id', '=', 'contacts.contact_type_id')
         ->leftjoin('title_table', 'title_table.id', '=', 'contacts.title_type_id')
         ->where('type_name', $type)
+        ->select('contacts.id', 'contacts.contact_type_id', 'type_name', 'contacts.title_type_id', 'title_name', 'surname', 'fname', 'dname', 'entityname', 'address1', 'address2', 'address3', 'address4', 'workphone', 'homephone', 'mobile', 'email', 'website', 'fax')
         ->get();
 
         return response(['data' => $getall]);

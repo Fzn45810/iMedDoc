@@ -12,7 +12,7 @@ class CalendarTasks extends Model
     protected $fillable = [
        'id',
        'appoint_type_id',
-       'calendar_id',
+       // 'calendar_id',
        'task_time',
        'task_date',
        'doctor_id',

@@ -31,10 +31,12 @@ class Hospital extends Migration
 
             $table->foreignId('forms_id')
             ->references('id')->on('form')
+            ->nullable()
             ->onDelete('cascade');
 
             $table->foreignId('income_category_id')
             ->references('id')->on('income_category')
+            ->nullable()
             ->onDelete('cascade');
 
             $table->timestamps();

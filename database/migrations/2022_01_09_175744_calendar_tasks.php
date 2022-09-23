@@ -20,9 +20,9 @@ class CalendarTasks extends Migration
             ->references('id')->on('appoint_type')
             ->onDelete('cascade');
 
-            $table->foreignId('calendar_id')
-            ->references('id')->on('calendar')
-            ->onDelete('cascade');
+            // $table->foreignId('calendar_id')
+            // ->references('id')->on('calendar')
+            // ->onDelete('cascade');
 
             $table->time('task_time');
             $table->date('task_date');
