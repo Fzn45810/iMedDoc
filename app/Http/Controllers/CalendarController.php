@@ -8,8 +8,10 @@ use App\Models\CalendarAppointment;
 use App\Models\CalendarSurgery;
 use App\Models\CalendarTasks;
 use App\Models\SurgeryProceRela;
+use App\Models\Procedures;
 use Illuminate\Support\Facades\Validator;
 use DB;
+use Carbon\Carbon;
 
 class CalendarController extends Controller
 {
@@ -21,6 +23,7 @@ class CalendarController extends Controller
         // boolean should be 1 or 0
         $holiday = $request->holiday;
 
+
         $validator = Validator::make($request->all(), [
             'description' => 'required',
             'date' => 'required',
@@ -30,6 +33,10 @@ class CalendarController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 401);
         }
+        
+        $day = Carbon::createFromFormat('Y-m-d', $date);
+        $month_name = $day->format('F');
+        $year_name = $day->format('Y');
 
         $calendar = Calendar::where('date', $date)->first();
 
@@ -37,6 +44,8 @@ class CalendarController extends Controller
             $wiatinglist = new Calendar;
             $wiatinglist->description = $description;
             $wiatinglist->date = $date;
+            $wiatinglist->calendar_month = $month_name;
+            $wiatinglist->calendar_year = $year_name;
             $wiatinglist->holiday = $holiday;
             $wiatinglist->save();
 
@@ -70,6 +79,10 @@ class CalendarController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 401);
         }
+        
+        $day = Carbon::createFromFormat('Y-m-d', $date);
+        $month_name = $day->format('F');
+        $year_name = $day->format('Y');
 
         $calendar_id = Calendar::where('id', $id)->first();
         $calendar_date = Calendar::where('date', $date)->first();
@@ -77,7 +90,7 @@ class CalendarController extends Controller
         if(!!$calendar_id){
             if(!$calendar_date){
                 Calendar::where('id', $id)
-                ->update(['description' => $description, 'date' => $date, 'holiday' => $holiday]);
+                ->update(['description' => $description, 'date' => $date, 'calendar_month' => $month_name, 'calendar_year' => $year_name ,'holiday' => $holiday]);
             }else{
                 Calendar::where('id', $id)
                 ->where('date', $date)
@@ -130,6 +143,10 @@ class CalendarController extends Controller
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
+        $day = Carbon::createFromFormat('Y-m-d', $appoint_date);
+        $month_name = $day->format('F');
+        $year_name = $day->format('Y');
+
         $calendarappoint = new CalendarAppointment;
         $calendarappoint->appoint_type_id = $appoint_type_id;
         // $calendarappoint->calendar_id = $calendar_id;
@@ -141,6 +158,8 @@ class CalendarController extends Controller
         $calendarappoint->clinic_physio = $clinic_physio;
         // date type should be date. formate 2021-12-14
         $calendarappoint->appoint_date = $appoint_date;
+        $calendarappoint->appoint_month = $month_name;
+        $calendarappoint->appoint_year = $year_name;
         $calendarappoint->appoint_notes = $appoint_notes;
         $calendarappoint->appoint_temp = $appoint_temp;
         $calendarappoint->save();
@@ -181,11 +200,16 @@ class CalendarController extends Controller
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
+        $day = Carbon::createFromFormat('Y-m-d', $appoint_date);
+        $month_name = $day->format('F');
+        $year_name = $day->format('Y');
+
         CalendarAppointment::where('id', $id)
         ->update(['appoint_type_id' => $appoint_type_id, 'patient_id' => $patient_id,
                 'description_id' => $description_id, 'location_id' => $location_id,
                 'doctor_id' => $doctor_id, 'appoint_time' => $appoint_time,
                 'clinic_physio' => $clinic_physio, 'appoint_date' => $appoint_date,
+                'appoint_month' => $month_name, 'appoint_year' => $year_name,
                 'appoint_notes' => $appoint_notes, 'appoint_temp' => $appoint_temp]);
 
         return response(['success' => 'successfully updated!']);
@@ -288,6 +312,10 @@ class CalendarController extends Controller
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
+        $day = Carbon::createFromFormat('Y-m-d', $surgery_date);
+        $month_name = $day->format('F');
+        $year_name = $day->format('Y');
+
         $calendarsurgery = new CalendarSurgery;
         $calendarsurgery->appoint_type_id = $appoint_type_id;
         // $calendarsurgery->calendar_id = $calendar_id;
@@ -299,6 +327,8 @@ class CalendarController extends Controller
         $calendarsurgery->surgery_time = $surgery_time;
         // date type should be date. formate 2021-12-14
         $calendarsurgery->surgery_date = $surgery_date;
+        $calendarsurgery->surgery_month = $month_name;
+        $calendarsurgery->surgery_year = $year_name;
         $calendarsurgery->admission_date = $admission_date;
         $calendarsurgery->surgery_note = $surgery_note;
         $calendarsurgery->surgery_temp = $surgery_temp;
@@ -366,8 +396,12 @@ class CalendarController extends Controller
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
+        $day = Carbon::createFromFormat('Y-m-d', $surgery_date);
+        $month_name = $day->format('F');
+        $year_name = $day->format('Y');
+
         CalendarSurgery::where('id', $id)
-        ->update(['appoint_type_id' => $appoint_type_id, 'patient_id' => $patient_id, 'hospital_id' => $hospital_id, 'surgery_from' => $surgery_from, 'doctor_id' => $doctor_id, 'anesthetist' => $anesthetist, 'surgery_time' => $surgery_time, 'surgery_date' => $surgery_date, 'admission_date' => $admission_date, 'surgery_note' => $surgery_note, 'surgery_temp' => $surgery_temp ]);
+        ->update(['appoint_type_id' => $appoint_type_id, 'patient_id' => $patient_id, 'hospital_id' => $hospital_id, 'surgery_from' => $surgery_from, 'doctor_id' => $doctor_id, 'anesthetist' => $anesthetist, 'surgery_time' => $surgery_time, 'surgery_date' => $surgery_date, 'surgery_month' => $month_name, 'surgery_year' =>  $year_name, 'admission_date' => $admission_date, 'surgery_note' => $surgery_note, 'surgery_temp' => $surgery_temp ]);
 
         SurgeryProceRela::where('surgery_id', $id)
         ->update(['procedures_id' => $procedure1_id]);
@@ -459,12 +493,18 @@ class CalendarController extends Controller
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
+        $day = Carbon::createFromFormat('Y-m-d', $task_date);
+        $month_name = $day->format('F');
+        $year_name = $day->format('Y');
+
         $calendartasks = new CalendarTasks;
         $calendartasks->appoint_type_id = $appoint_type_id;
         // $calendartasks->calendar_id = $calendar_id;
         $calendartasks->task_time = $task_time;
         // date type should be date. formate 2021-12-14
         $calendartasks->task_date = $task_date;
+        $calendartasks->task_month = $month_name;
+        $calendartasks->task_year = $year_name;
         $calendartasks->doctor_id = $doctor_id;
         $calendartasks->remind = $remind;
         $calendartasks->remind_to = $remind_to;
@@ -505,21 +545,13 @@ class CalendarController extends Controller
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
-        $calendartasks = new CalendarTasks;
-        $calendartasks->appoint_type_id = $appoint_type_id;
-        // $calendartasks->calendar_id = $calendar_id;
-        $calendartasks->task_time = $task_time;
-        // date type should be date. formate 2021-12-14
-        $calendartasks->task_date = $task_date;
-        $calendartasks->doctor_id = $doctor_id;
-        $calendartasks->remind = $remind;
-        $calendartasks->remind_to = $remind_to;
-        $calendartasks->color = $color;
-        $calendartasks->task_text = $task_text;
-        $calendartasks->save();
+        $day = Carbon::createFromFormat('Y-m-d', $task_date);
+        $month_name = $day->format('F');
+        $year_name = $day->format('Y');
 
         CalendarTasks::where('id', $id)
-        ->update(['appoint_type_id' => $appoint_type_id, 'task_time' => $task_time, 'task_date' => $task_date, 'doctor_id' => $doctor_id, 'remind' => $remind, 'remind_to' => $remind_to, 'color' => $color, 'task_text' => $task_text]);
+        ->update(['appoint_type_id' => $appoint_type_id, 'task_time' => $task_time, 'task_date' => $task_date, 'task_month' => $month_name, 'task_year' => $year_name, 'doctor_id' => $doctor_id, 'remind' => $remind, 'remind_to' => $remind_to, 'color' => $color, 'task_text' => $task_text
+        ]);
 
         return response(['success' => 'successfully updated!']);
     }
@@ -564,6 +596,7 @@ class CalendarController extends Controller
     }
 
     public function get_date_calendar(Request $request){
+        // Date formate 2021-12-15
         $date = $request->date;
 
         $validator = Validator::make($request->all(), [
@@ -574,31 +607,43 @@ class CalendarController extends Controller
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
-        // $appointmentdata = DB::table('calendar')
-        // ->join('calendar_appointment', 'calendar_appointment.calendar_id', '=', 'calendar.id')
-        // ->where('calendar.date', '=', $date)
-        // ->get();
-
         $appointmentdata = DB::table('calendar_appointment')
+        ->leftjoin('patient', 'calendar_appointment.patient_id', '=', 'patient.id')
+        ->leftjoin('appoint_descrip', 'appoint_descrip.id', '=', 'calendar_appointment.description_id')
+        ->leftjoin('clinic_location', 'clinic_location.id', '=', 'calendar_appointment.location_id')
+        ->leftjoin('doctor', 'doctor.id', '=', 'calendar_appointment.doctor_id')
         ->where('appoint_date', '=', $date)
+        ->select('calendar_appointment.id', 'calendar_appointment.appoint_time', 'patient.dname', 'patient.dateOfBirth', 'patient.homePhone', 'appoint_descrip.appoint_description', 'clinic_location.locatio_name', 'calendar_appointment.appoint_notes', 'calendar_appointment.status')
         ->get();
 
-        // $surgerydata = DB::table('calendar')
-        // ->join('calendar_surgery', 'calendar_surgery.calendar_id', '=', 'calendar.id')
-        // ->where('calendar.date', '=', $date)
-        // ->get();
-
         $surgerydata = DB::table('calendar_surgery')
+        ->leftjoin('patient', 'calendar_surgery.patient_id', '=', 'patient.id')
+        ->leftjoin('hospital', 'hospital.id', '=', 'calendar_surgery.hospital_id')
+        ->select('calendar_surgery.id', 'calendar_surgery.surgery_time', 'patient.mobile')
         ->where('surgery_date', '=', $date)
         ->get();
 
-        // $tasksdata = DB::table('calendar')
-        // ->join('calendar_tasks', 'calendar_tasks.calendar_id', '=', 'calendar.id')
-        // ->where('calendar.date', '=', $date)
-        // ->get();
+        foreach($surgerydata as $surgeryvalue){
+            $procedureID = SurgeryProceRela::where('surgery_id', $surgeryvalue->id)->get();
+            if($procedureID){
+                foreach($procedureID as $key => $procedure){
+                    if($key == 0){
+                        $get_procedure_name = Procedures::where('id', $procedure->procedures_id)->first()->procedure_name;
+                        $surgeryvalue->procedure_one = $get_procedure_name;
+                    }elseif($key == 1){
+                        $get_procedure_name = Procedures::where('id', $procedure->procedures_id)->first()->procedure_name;
+                        $surgeryvalue->procedure_two = $get_procedure_name;
+                    }elseif($key == 2){
+                        $get_procedure_name = Procedures::where('id', $procedure->procedures_id)->first()->procedure_name;
+                        $surgeryvalue->procedure_three = $get_procedure_name;
+                    }
+                }
+            }
+        }
 
         $tasksdata = DB::table('calendar_tasks')
         ->where('task_date', '=', $date)
+        ->select('id','task_time', 'task_text', 'status')
         ->get();
 
         $calendar = DB::table('calendar')
@@ -606,11 +651,101 @@ class CalendarController extends Controller
         ->get();
 
         $alldata['appointment'] = $appointmentdata;
+        $alldata['appointment'][] = "#FF6600";
         $alldata['surgery'] = $surgerydata;
+        $alldata['surgery'][] = "#0065BB";
         $alldata['tasks'] = $tasksdata;
+        $alldata['tasks'][] = "#66CC00";
         $alldata['calendar'] = $calendar;
 
         // ->select('id', 'description', 'date', 'holiday')->get();
+        return response(['data' => $alldata]);
+    }
+
+    public function get_month_calendar(Request $request){
+        // Date formate 2021-12-15
+        $month = $request->month;
+        $year = $request->year;
+
+        $validator = Validator::make($request->all(), [
+            'month' => 'required',
+            'year' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 401);
+        }
+
+        $calendar = DB::table('calendar')
+        ->where('calendar_month', '=', $month)
+        ->where('calendar_year', '=', $year)
+        ->get();
+
+        // $appointmentdata = DB::table('calendar_appointment')
+        // ->where('appoint_month', '=', $month)
+        // ->where('appoint_year', '=', $year)
+        // ->get();
+
+        $appointmentdata = DB::table('calendar_appointment')
+        ->leftjoin('patient', 'calendar_appointment.patient_id', '=', 'patient.id')
+        ->leftjoin('appoint_descrip', 'appoint_descrip.id', '=', 'calendar_appointment.description_id')
+        ->leftjoin('clinic_location', 'clinic_location.id', '=', 'calendar_appointment.location_id')
+        ->leftjoin('doctor', 'doctor.id', '=', 'calendar_appointment.doctor_id')
+        ->where('appoint_month', '=', $month)
+        ->where('appoint_year', '=', $year)
+        ->select('calendar_appointment.id', 'calendar_appointment.appoint_time', 'patient.dname', 'patient.dateOfBirth', 'patient.homePhone', 'appoint_descrip.appoint_description', 'clinic_location.locatio_name', 'calendar_appointment.appoint_notes', 'calendar_appointment.status')
+        ->get();
+
+        // $surgerydata = DB::table('calendar_surgery')
+        // ->where('surgery_month', '=', $month)
+        // ->where('surgery_year', '=', $year)
+        // ->get();
+
+        $surgerydata = DB::table('calendar_surgery')
+        ->leftjoin('patient', 'calendar_surgery.patient_id', '=', 'patient.id')
+        ->leftjoin('hospital', 'hospital.id', '=', 'calendar_surgery.hospital_id')
+        ->select('calendar_surgery.id', 'calendar_surgery.surgery_time', 'patient.mobile')
+        ->where('surgery_month', '=', $month)
+        ->where('surgery_year', '=', $year)
+        ->get();
+
+        foreach($surgerydata as $surgeryvalue){
+            $procedureID = SurgeryProceRela::where('surgery_id', $surgeryvalue->id)->get();
+            if($procedureID){
+                foreach($procedureID as $key => $procedure){
+                    if($key == 0){
+                        $get_procedure_name = Procedures::where('id', $procedure->procedures_id)->first()->procedure_name;
+                        $surgeryvalue->procedure_one = $get_procedure_name;
+                    }elseif($key == 1){
+                        $get_procedure_name = Procedures::where('id', $procedure->procedures_id)->first()->procedure_name;
+                        $surgeryvalue->procedure_two = $get_procedure_name;
+                    }elseif($key == 2){
+                        $get_procedure_name = Procedures::where('id', $procedure->procedures_id)->first()->procedure_name;
+                        $surgeryvalue->procedure_three = $get_procedure_name;
+                    }
+                }
+            }
+        }
+
+        // $tasksdata = DB::table('calendar_tasks')
+        // ->where('task_month', '=', $month)
+        // ->where('task_year', '=', $year)
+        // ->get();
+
+        $tasksdata = DB::table('calendar_tasks')
+        ->where('task_month', '=', $month)
+        ->where('task_year', '=', $year)
+        ->select('id','task_time', 'task_text', 'status')
+        ->get();
+
+        $alldata['appointment'] = $appointmentdata;
+        $alldata['appointment'][] = "#FF6600";
+        $alldata['surgery'] = $surgerydata;
+        $alldata['surgery'][] = "#0065BB";
+        $alldata['tasks'] = $tasksdata;
+        $alldata['tasks'][] = "#66CC00";
+        $alldata['calendar'] = $calendar;
+
         return response(['data' => $alldata]);
     }
 }

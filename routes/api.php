@@ -70,6 +70,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
     Route::post('/bydatecalendar', 'App\Http\Controllers\CalendarController@get_date_calendar');
 
+    Route::post('/bymonthcalendar', 'App\Http\Controllers\CalendarController@get_month_calendar');
+
     Route::post('/contacts', 'App\Http\Controllers\ContactsController@create');
     Route::post('/update', 'App\Http\Controllers\ContactsController@update');
     Route::get('/getsingle/{id}', 'App\Http\Controllers\ContactsController@single_contact');

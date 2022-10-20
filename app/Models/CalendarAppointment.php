@@ -20,6 +20,8 @@ class CalendarAppointment extends Model
        'appoint_time',
        'clinic_physio',
        'appoint_date',
+       'appoint_month',
+       'appoint_year',
        'appoint_notes',
        'appoint_temp',
        'status'

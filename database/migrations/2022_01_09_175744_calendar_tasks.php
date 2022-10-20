@@ -26,6 +26,8 @@ class CalendarTasks extends Migration
 
             $table->time('task_time');
             $table->date('task_date');
+            $table->string('task_month');
+            $table->string('task_year');
 
             $table->foreignId('doctor_id')
             ->references('id')->on('doctor')

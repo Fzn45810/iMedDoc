@@ -18,8 +18,11 @@ class CalendarTable extends Migration
 
             $table->longText('description');
             $table->date('date');
+            $table->string('calendar_month');
+            $table->string('calendar_year');
             $table->boolean('holiday')->default(0);
             $table->timestamps();
+
         });
     }
 

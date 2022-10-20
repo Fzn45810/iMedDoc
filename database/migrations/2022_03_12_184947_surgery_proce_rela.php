@@ -17,11 +17,13 @@ class SurgeryProceRela extends Migration
             $table->id();
 
             $table->foreignId('surgery_id')
-            ->references('id')->on('invoice')
+            ->references('id')->on('calendar_surgery')
+            ->nullable()
             ->onDelete('cascade');
 
             $table->foreignId('procedures_id')
             ->references('id')->on('procedures')
+            ->nullable()
             ->onDelete('cascade');
 
             $table->timestamps();

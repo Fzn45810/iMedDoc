@@ -41,6 +41,8 @@ class CalendarSurgery extends Migration
             $table->string('anesthetist')->nullable();
             $table->time('surgery_time');
             $table->date('surgery_date');
+            $table->string('surgery_month');
+            $table->string('surgery_year');
             $table->date('admission_date');
             $table->string('surgery_note')->nullable();
             $table->string('surgery_temp')->nullable();

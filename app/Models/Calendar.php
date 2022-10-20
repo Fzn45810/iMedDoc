@@ -13,6 +13,8 @@ class Calendar extends Model
        'id',
        'description',
        'date',
+       'calendar_month',
+       'calendar_year',
        'holiday'
     ];
 }

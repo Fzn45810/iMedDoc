@@ -43,6 +43,8 @@ class CalendarAppointment extends Migration
             $table->time('appoint_time');
             $table->string('clinic_physio')->nullable();
             $table->date('appoint_date');
+            $table->string('appoint_month');
+            $table->string('appoint_year');
             $table->string('appoint_notes')->nullable();
             $table->string('appoint_temp')->nullable();
 
